@@ -31,6 +31,7 @@ public class ItemController {
     @GetMapping("items/detail/{itemId}")
     public ResponseEntity<?> getItem(@PathVariable Long itemId) {
         ItemResponseDto itemResponseDto = itemService.getItem(itemId);
+        itemService.addViewCnt(itemId);
         return ResponseEntity.ok().body(itemResponseDto);
     }
 

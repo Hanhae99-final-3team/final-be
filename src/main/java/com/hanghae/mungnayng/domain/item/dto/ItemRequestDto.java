@@ -15,4 +15,6 @@ public class ItemRequestDto {
     private String itemCategory;
     private String location;
     private String itemImgs;
+    private Long purchasePrice;
+    private Long sellingPrice;
 }

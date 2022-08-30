@@ -49,8 +49,14 @@ public class Item extends Timestamped {
     @Column
     private Long zzimCnt;
 
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int viewCnt;
+
     @Column
-    private Long viewCnt;
+    private Long purchasePrice;
+
+    @Column
+    private Long sellingPrice;
 
     public void update(ItemRequestDto itemRequestDto){
         this.title = itemRequestDto.getTitle();
