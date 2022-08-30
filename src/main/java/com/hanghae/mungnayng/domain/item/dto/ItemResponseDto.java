@@ -24,8 +24,8 @@ public class ItemResponseDto {
     private String itemCategory;
     private String itemImgs;
     private String location;
-    private Long commentCnt;
-    private Long zzimCnt;
+    private int commentCnt;
+    private int zzimCnt;
     private int viewCnt;
     private Long purchasePrice;
     private Long sellingPrice;

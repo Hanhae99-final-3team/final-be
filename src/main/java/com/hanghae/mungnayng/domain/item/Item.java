@@ -43,11 +43,11 @@ public class Item extends Timestamped {
     @Column
     private String location;
 
-    @Column
-    private Long commentCnt;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int commentCnt;
 
-    @Column
-    private Long zzimCnt;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int zzimCnt;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int viewCnt;
@@ -66,6 +66,10 @@ public class Item extends Timestamped {
         // :: TODO 이미지 제대로 수정되는지 확인
         this.itemImgs = itemRequestDto.getItemImgs();
         this.location = itemRequestDto.getLocation();
+    }
+
+    public void updateZzimCnt(int zzimCnt){
+        this.zzimCnt = zzimCnt;
     }
 
 }

@@ -68,7 +68,7 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    // :: TODO isMine 기능 구현
+    // :: TODO isMine 및 isZzimed 기능 구현
     // 공통 작업 - ResponseDto build
     private ItemResponseDto buildItemResponseDto(Item item) {
 //        boolean isMine;
