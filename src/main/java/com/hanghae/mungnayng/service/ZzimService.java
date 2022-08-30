@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.service;
 
 import com.hanghae.mungnayng.domain.item.Item;
+import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.domain.zzim.dto.ZzimRequestDto;
 import com.hanghae.mungnayng.repository.ItemRepository;
@@ -27,28 +28,44 @@ public class ZzimService {
         Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, zzimRequestDto.getNickname());
         if (optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
-        } else {
-            Zzim zzim = Zzim.builder()
-                    .item(item)
-                    .zzimedBy(zzimRequestDto.getNickname())
-                    .build();
-            zzimRepository.save(zzim);
         }
+        Zzim zzim = Zzim.builder()
+                .item(item)
+                .zzimedBy(zzimRequestDto.getNickname())
+                .build();
+        zzimRepository.save(zzim);
         int zzimCnt = zzimRepository.countAllByItemId(itemId);
         item.updateZzimCnt(zzimCnt);
     }
 
     // 찜 취소
     @Transactional
-    public void cancelZzim(Long itemId, ZzimRequestDto zzimRequestDto){
+    public void cancelZzim(Long itemId, ZzimRequestDto zzimRequestDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
         Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, zzimRequestDto.getNickname());
-        if(!optionalZzim.isPresent()){
+        if (!optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
+        }
+        zzimRepository.delete(optionalZzim.get());
+        int zzimCnt = zzimRepository.countAllByItemId(itemId);
+        item.updateZzimCnt(zzimCnt);
+    }
+
+    // 거래 완료 버튼
+    @Transactional
+    public Boolean purchaseComplete(Long itemId, ZzimRequestDto zzimRequestDto) {
+        Item item = itemRepository.findById(itemId).orElseThrow(
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        );
+        // ::TODO 로그인 유효성 검사 추가
+        if (item.isComplete() == false) {
+            item.updateIsComplete(true);
+            return true;
         } else {
-            zzimRepository.delete(optionalZzim.get());
+            item.updateIsComplete(false);
+            return false;
         }
     }
 }

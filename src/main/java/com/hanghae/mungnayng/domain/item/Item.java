@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -58,6 +59,9 @@ public class Item extends Timestamped {
     @Column
     private Long sellingPrice;
 
+    @Column(columnDefinition = "boolean default false", nullable = false)
+    private boolean isComplete;
+
     public void update(ItemRequestDto itemRequestDto){
         this.title = itemRequestDto.getTitle();
         this.content = itemRequestDto.getContent();
@@ -70,6 +74,10 @@ public class Item extends Timestamped {
 
     public void updateZzimCnt(int zzimCnt){
         this.zzimCnt = zzimCnt;
+    }
+
+    public void updateIsComplete(boolean isComplete){
+        this.isComplete = isComplete;
     }
 
 }

@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
 import javax.persistence.Lob;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,4 +28,5 @@ public class ItemResponseDto {
     private Long sellingPrice;
     private String createdAt;
     private String modifiedAt;
+    private boolean isComplete;
 }

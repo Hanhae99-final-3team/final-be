@@ -88,6 +88,7 @@ public class ItemService {
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
+                .isComplete(item.isComplete())
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();

@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.controller;
 
+import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.dto.ZzimRequestDto;
 import com.hanghae.mungnayng.service.ZzimService;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,13 @@ public class ZzimController {
     public ResponseEntity<?> cancelZzim(@PathVariable Long itemId, @RequestBody ZzimRequestDto zzimRequestDto){
         zzimService.cancelZzim(itemId, zzimRequestDto);
         return ResponseEntity.ok().body(Map.of("isZzimed",false,"msg","찜 취소되었습니다."));
+    }
+
+    // 구매 완료
+    // ::TODO 로그인 연결 후 토큰 값으로 회원정보 받아오도록 수정하고 RequestBody 값이랑 Dto 삭제
+    @PutMapping("items/detail/complete/{itemId}")
+    public ResponseEntity<?> purchaseComplete(@PathVariable Long itemId,@RequestBody ZzimRequestDto zzimRequestDto){
+        Boolean isComplete = zzimService.purchaseComplete(itemId, zzimRequestDto);
+        return ResponseEntity.ok().body(Map.of("isComplete",isComplete,"msg","거래 상태가 변경되었습니다."));
     }
 }

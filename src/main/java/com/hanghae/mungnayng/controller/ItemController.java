@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,10 +23,11 @@ public class ItemController {
     // 상품 등록
     // : TODO 로그인 시만 가능하도록 기능 추가
     @PostMapping("items")
-    public ResponseEntity<?> createItem(@RequestBody ItemRequestDto itemRequestDto) {
+    public ResponseEntity<?> createItem(@ModelAttribute ItemRequestDto itemRequestDto) {
         ItemResponseDto itemResponseDto = itemService.createItem(itemRequestDto);
         return ResponseEntity.ok().body(itemResponseDto);
     }
+
 
     // 단일 상품 조회 - detail
     @GetMapping("items/detail/{itemId}")
