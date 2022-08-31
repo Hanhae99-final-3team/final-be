@@ -18,14 +18,20 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     // petCategory = dog / itemCategory = food
     // 이중 카테고리에 의한 조회
-    @Query("select i from Item i where i.petCategory = :petCategory and i.itemCategory = :itemCategory")
+    @Query("select i from Item i " +
+            "where i.petCategory = :petCategory and i.itemCategory = :itemCategory " +
+            "order by i.createdAt desc ")
     List<Item> getAllItemListByTwoCategory(String petCategory, String itemCategory);
 
     // 단일 카테고리에 의한 조회 - petCategory
-    @Query("select i from Item i where i.petCategory = :petCategory")
+    @Query("select i from Item i " +
+            "where i.petCategory = :petCategory " +
+            "order by i.createdAt desc ")
     List<Item> getAllItemListByPetCategry(String petCategory);
 
     // 단일 카테고리에 의한 조회 - itemCategory
-    @Query("select i from Item i where i.itemCategory = :itemCategory")
+    @Query("select i from Item i " +
+            "where i.itemCategory = :itemCategory " +
+            "order by i.createdAt desc ")
     List<Item> getAllItemListByItemCategory(String itemCategory);
 }
