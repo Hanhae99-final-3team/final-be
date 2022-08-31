@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.Lob;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class ItemResponseDto {
     private String content;
     private String petCategory;
     private String itemCategory;
-    private String itemImgs;
+    private List<String> itemImgs;
     private String location;
     private int commentCnt;
     private int zzimCnt;

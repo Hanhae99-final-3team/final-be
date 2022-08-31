@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.domain.item;
 
 import com.hanghae.mungnayng.domain.Timestamped;
+import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,9 +41,6 @@ public class Item extends Timestamped {
     private String itemCategory;
 
     @Column
-    private String itemImgs;
-
-    @Column
     private String location;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
@@ -62,14 +61,17 @@ public class Item extends Timestamped {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isComplete;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> image;
+
     public void update(ItemRequestDto itemRequestDto){
         this.title = itemRequestDto.getTitle();
         this.content = itemRequestDto.getContent();
         this.petCategory = itemRequestDto.getPetCategory();
         this.itemCategory = itemRequestDto.getItemCategory();
-        // :: TODO 이미지 제대로 수정되는지 확인
-        this.itemImgs = itemRequestDto.getItemImgs();
         this.location = itemRequestDto.getLocation();
+        this.purchasePrice = itemRequestDto.getPurchasePrice();
+        this.sellingPrice = itemRequestDto.getSellingPrice();
     }
 
     public void updateZzimCnt(int zzimCnt){

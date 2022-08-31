@@ -5,7 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ItemRepository extends JpaRepository<Item, Long> {
+
+    List<Item> findAllByOrderByCreatedAtDesc();
 
     // 상품 단일 조회 시 viewCnt + 1
     @Modifying

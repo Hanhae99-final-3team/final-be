@@ -23,11 +23,16 @@ public class ItemController {
     // 상품 등록
     // : TODO 로그인 시만 가능하도록 기능 추가
     @PostMapping("items")
-    public ResponseEntity<?> createItem(@ModelAttribute ItemRequestDto itemRequestDto) {
+    public ResponseEntity<?> createItem(@ModelAttribute ItemRequestDto itemRequestDto) throws IOException {
         ItemResponseDto itemResponseDto = itemService.createItem(itemRequestDto);
         return ResponseEntity.ok().body(itemResponseDto);
     }
 
+    // 전체 상품 조회
+//    @GetMapping("items")
+//    public ResponseEntity<?> getAllItem() {
+//        return
+//    }
 
     // 단일 상품 조회 - detail
     @GetMapping("items/detail/{itemId}")
@@ -39,15 +44,15 @@ public class ItemController {
 
     // 상품 수정 - detail
     @PutMapping("items/detail/{itemId}")
-    public ResponseEntity<?> updateItem(@PathVariable Long itemId, @RequestBody ItemRequestDto itemRequestDto) {
+    public ResponseEntity<?> updateItem(@PathVariable Long itemId, @ModelAttribute ItemRequestDto itemRequestDto) throws IOException {
         ItemResponseDto itemResponseDto = itemService.updateItem(itemId, itemRequestDto);
         return ResponseEntity.ok(itemResponseDto);
     }
 
     // 상품 삭제
     @DeleteMapping("items/detail/{itemId}")
-    public ResponseEntity<?> deleteItem(@PathVariable Long itemId){
+    public ResponseEntity<?> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
-        return ResponseEntity.ok().body(Map.of("msg","게시글이 삭제되었습니다.","success",true));
+        return ResponseEntity.ok().body(Map.of("msg", "게시글이 삭제되었습니다.", "success", true));
     }
 }

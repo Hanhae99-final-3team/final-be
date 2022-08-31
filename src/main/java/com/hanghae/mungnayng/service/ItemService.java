@@ -1,21 +1,31 @@
 package com.hanghae.mungnayng.service;
 
+import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
+import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
+import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final S3uploader s3uploader;
+    private final ImageRepository imageRepository;
 
     // 상품 등록
-    public ItemResponseDto createItem(ItemRequestDto itemRequestDto) {
+    public ItemResponseDto createItem(ItemRequestDto itemRequestDto) throws IOException {
         Item item = Item.builder()
                 .title(itemRequestDto.getTitle())
                 .content(itemRequestDto.getContent())
@@ -24,13 +34,24 @@ public class ItemService {
                 .petCategory(itemRequestDto.getPetCategory())
                 .itemCategory(itemRequestDto.getItemCategory())
                 .location(itemRequestDto.getLocation())
-                // :: TODO 이미지 S3를 통한 다중 이미지 업로드 기능 추가
-                .itemImgs(itemRequestDto.getItemImgs())
                 .purchasePrice(itemRequestDto.getPurchasePrice())
                 .sellingPrice(itemRequestDto.getSellingPrice())
                 .build();
-
         itemRepository.save(item);
+
+        // itemRequestDto에서 받아온 값 중 item과 multipartFile을 따로 저장
+        List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
+        if (multipartFileList != null) {
+            for (MultipartFile multipartFile : multipartFileList) {
+                String url = s3uploader.Uploader(multipartFile);
+                Image image = Image.builder()
+                        .imgUrl(url)
+                        .item(item)
+                        .build();
+                imageRepository.save(image);
+            }
+        }
+
         return buildItemResponseDto(item);
     }
 
@@ -51,11 +72,26 @@ public class ItemService {
 
     // 상품 수정 - detail
     @Transactional
-    public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
+    public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) throws IOException {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("조회하시려는 상품이 존재하지 않습니다.")
         );
         item.update(itemRequestDto);
+
+        List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
+        if (multipartFileList != null) {
+            imageRepository.deleteAllByItemId(itemId);
+            for (MultipartFile multipartFile : multipartFileList) {
+                String url = s3uploader.Uploader(multipartFile);
+                Image image = Image.builder()
+                        .imgUrl(url)
+                        .item(item)
+                        .build();
+                imageRepository.save(image);
+            }
+        }
+
+
         return buildItemResponseDto(item);
     }
 
@@ -71,6 +107,15 @@ public class ItemService {
     // :: TODO isMine 및 isZzimed 기능 구현
     // 공통 작업 - ResponseDto build
     private ItemResponseDto buildItemResponseDto(Item item) {
+
+        // 해당 item의 이미지 호출
+        List<Image> imageList = imageRepository.findAllByItemId(item.getId());
+        List<String> imgUrlList = new ArrayList<>();
+        for (Image image : imageList) {
+            System.out.println();
+            imgUrlList.add(image.getImgUrl());
+        }
+
 //        boolean isMine;
 //        isMine = itemRequestDto.getNickname().equals("김재영");
         return ItemResponseDto.builder()
@@ -81,7 +126,7 @@ public class ItemService {
                 .content(item.getContent())
                 .petCategory(item.getPetCategory())
                 .itemCategory(item.getItemCategory())
-                .itemImgs(item.getItemImgs())
+                .itemImgs(imgUrlList)
                 .location(item.getLocation())
                 .commentCnt(item.getCommentCnt())
                 .zzimCnt(item.getZzimCnt())
