@@ -29,10 +29,28 @@ public class ItemController {
     }
 
     // 전체 상품 조회
-//    @GetMapping("items")
-//    public ResponseEntity<?> getAllItem() {
-//        return
-//    }
+    @GetMapping("items")
+    public ResponseEntity<?> getAllItem() {
+        return ResponseEntity.ok().body(itemService.getAllItem());
+    }
+
+    // 카테고리에 따른 상품 조회(단일 카테고리 - petCategory)
+    @GetMapping("items/petcategory")
+    public ResponseEntity<?> getItemByPetCategory(@RequestParam("petCategory") String petCategory){
+        return ResponseEntity.ok().body(itemService.getItemByPetCategory(petCategory));
+    }
+
+    // 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory)
+    @GetMapping("items/itemcategory")
+    public ResponseEntity<?> getItemByItemCategory(@RequestParam("itemCategory") String itemCategory){
+        return ResponseEntity.ok().body(itemService.getItemByItemCategory(itemCategory));
+    }
+
+    // 카테고리에 따른 상품 조회(이중 카테고리)
+    @GetMapping("items/twocategory")
+    public ResponseEntity<?> getItemByTwoCategory(@RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory){
+        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(petCategory, itemCategory));
+    }
 
     // 단일 상품 조회 - detail
     @GetMapping("items/detail/{itemId}")

@@ -55,6 +55,56 @@ public class ItemService {
         return buildItemResponseDto(item);
     }
 
+    // 전체 상품 조회
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getAllItem() {
+        List<Item> itemList = itemRepository.findAllByOrderByCreatedAtDesc();
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        for (Item item : itemList) {
+            itemResponseDtoList.add(
+                    buildItemResponseDto(item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
+    // 카테고리에 따른 상품 조회(이중 카테고리)
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getItemByTwoCategory(String petCategory, String itemCategory) {
+        List<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory);
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        for (Item item : itemList) {
+            itemResponseDtoList.add(
+                    buildItemResponseDto(item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
+    // 카테고리에 따른 상품 조회(단일 카테고리 - petCategory)
+    public List<ItemResponseDto> getItemByPetCategory(String petCategory) {
+        List<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory);
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        for (Item item : itemList) {
+            itemResponseDtoList.add(
+                    buildItemResponseDto(item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
+    // 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory)
+    public List<ItemResponseDto> getItemByItemCategory(String itemCategory){
+        List<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory);
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        for(Item item : itemList){
+            itemResponseDtoList.add(
+              buildItemResponseDto(item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
     // 단일 상품 조회 - detail
     @Transactional(readOnly = true)
     public ItemResponseDto getItem(Long itemId) {
