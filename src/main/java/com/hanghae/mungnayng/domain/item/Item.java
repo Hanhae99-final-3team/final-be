@@ -25,11 +25,11 @@ public class Item extends Timestamped {
     @Column
     private String nickname;
 
-    @Column
+    @Column(nullable = false)
     private String title;
 
     @Lob
-    @Column
+    @Column(nullable = false)
     private String content;
 
     // 1차분류 - 강아지 or 고양이

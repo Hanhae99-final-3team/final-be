@@ -34,4 +34,10 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where i.itemCategory = :itemCategory " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByItemCategory(String itemCategory);
+
+    // 상품 기본 검색('item - title / content'를 바탕으로)
+    @Query("select i from Item i " +
+            "where i.title like %:keyword% or i.content like %:keyword% " +
+            "order by i.createdAt desc ")
+    List<Item> getAllItemListByTitleOrContent(String keyword);
 }
