@@ -10,7 +10,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOrderByCreatedAtDesc();
-    Item findByIdOrderByCreatedAtDesc(Long itemId);
 
     // 상품 단일 조회 시 viewCnt + 1
     @Modifying
@@ -42,4 +41,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "order by i.createdAt desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
 
+    // 내가 찜한 상품 조회
+    @Query(nativeQuery = true, value =
+    "select * from item i inner join zzim z on i.id = z.item_id " +
+            "where z.zzimed_by = :nickname order by z.id desc")
+    List<Item> getAllItemListByZzimedId(String nickname);
 }

@@ -11,6 +11,7 @@ import com.hanghae.mungnayng.repository.ZzimRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 
 import java.time.format.DateTimeFormatter;
@@ -61,16 +62,14 @@ public class ZzimService {
     }
 
     // 내가 찜한 상품 가져오기
-    // :: TODO 쿼리문 수정 필요
+    // :: TODO Member class 연결 후 수정 필요
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getZzimItem(ZzimRequestDto zzimRequestDto) {
-        List<Zzim> zzimList = zzimRepository.getZzimZzimedByMe(zzimRequestDto.getNickname());
-        Collections.reverse(zzimList);
+
+        List<Item> itemList = itemRepository.getAllItemListByZzimedId(zzimRequestDto.getNickname());
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
 
-        for (Zzim zzim : zzimList) {
-            Item item = itemRepository.findByIdOrderByCreatedAtDesc(zzim.getItem().getId());
-
+        for (Item item : itemList) {
             // 해당 item의 이미지 호출
             List<Image> imageList = imageRepository.findAllByItemId(item.getId());
             List<String> imgUrlList = new ArrayList<>();

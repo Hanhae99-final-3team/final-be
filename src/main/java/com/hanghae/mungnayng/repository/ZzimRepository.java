@@ -12,10 +12,4 @@ public interface ZzimRepository extends JpaRepository<Zzim, Long> {
     Optional<Zzim> findByItemIdAndZzimedBy(Long itemId, String nickname);
 
     int countAllByItemId(Long itemId);
-
-    // 내가 찜한 상품 가져오기
-    @Query("select z from Zzim z " +
-            "where z.zzimedBy = :nickname")
-    List<Zzim> getZzimZzimedByMe(String nickname);
-
 }
