@@ -4,6 +4,7 @@ import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
+import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.SearchRepository;
@@ -79,5 +80,34 @@ public class SearchService {
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
+    }
+
+    // 최근 검색어 조회
+    // :: TODO 닉네임 가져오는 로직 추가
+    public List<ItemSearchResponsedto> getSearchWord() {
+        String nickname = "김재영";
+        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
+        List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
+        for (String string : searchWordList) {
+            itemSearchResponsedtoList.add(
+                    ItemSearchResponsedto.builder()
+                            .searchWord(string)
+                            .build()
+            );
+        }
+        return itemSearchResponsedtoList;
+    }
+    // 인기 검색어 조회
+    public List<ItemSearchResponsedto> getPopularSearchWord() {
+        List<String> searchWordList = searchRepository.getAllByPopularity();
+        List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
+        for(String string : searchWordList){
+            itemSearchResponsedtoList.add(
+              ItemSearchResponsedto.builder()
+                      .searchWord(string)
+                      .build()
+            );
+        }
+        return itemSearchResponsedtoList;
     }
 }

@@ -61,6 +61,7 @@ public class ZzimService {
     }
 
     // 내가 찜한 상품 가져오기
+    // :: TODO 쿼리문 수정 필요
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getZzimItem(ZzimRequestDto zzimRequestDto) {
         List<Zzim> zzimList = zzimRepository.getZzimZzimedByMe(zzimRequestDto.getNickname());

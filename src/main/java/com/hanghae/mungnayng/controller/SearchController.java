@@ -3,6 +3,7 @@ package com.hanghae.mungnayng.controller;
 import com.hanghae.mungnayng.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,4 +20,16 @@ public class SearchController {
         return ResponseEntity.ok().body(searchService.searchItem(keyword));
     }
 
+    // 최근 검색어
+    // :: TODO 닉네임 가져오는 로직 추가
+    @GetMapping("items/search")
+    public ResponseEntity<?> getSearchWord(){
+        return ResponseEntity.ok().body(searchService.getSearchWord());
+    }
+
+    // 인기 검색어
+    @GetMapping("items/search/popular")
+    public ResponseEntity<?> getPopularSearchWord(){
+        return ResponseEntity.ok().body(searchService.getPopularSearchWord());
+    }
 }
