@@ -41,8 +41,9 @@ public class MemberService {
                 .findByEmail(loginRequestDto.getEmail()).orElseThrow(() -> new BadRequestException("아이디 혹은 비밀번호를 확인하세요."));
         checkPassword(loginRequestDto.getPassword(), member.getPassword());
 
-        String token = jwtProvider.createToken(member.getEmail(), member.getRole());
-        tokenToHeaders(token,response);
+        String accessToken = jwtProvider.createAuthorizationToken(member.getEmail(), member.getRole());
+        String refreshToken = jwtProvider.createRefreshToken(member, member.getRole());
+        tokenToHeaders(accessToken, refreshToken, response);
     }
 
     private void checkPassword(String password, String encodedPassword) {
@@ -52,9 +53,8 @@ public class MemberService {
         }
     }
 
-    public void tokenToHeaders(String token, HttpServletResponse response) {
-        response.addHeader("Authorization", "Bearer " + token);
+    public void tokenToHeaders(String authorizationToken, String refreshToken, HttpServletResponse response) {
+        response.addHeader("Authorization", "Bearer " + authorizationToken);
+        response.addHeader("RefreshToken", refreshToken);
     }
-
-
 }

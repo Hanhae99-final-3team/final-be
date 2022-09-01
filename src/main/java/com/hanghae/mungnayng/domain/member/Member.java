@@ -1,5 +1,7 @@
 package com.hanghae.mungnayng.domain.member;
 
+import com.hanghae.mungnayng.domain.Timestamped;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member {
+@AllArgsConstructor
+public class Member extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
