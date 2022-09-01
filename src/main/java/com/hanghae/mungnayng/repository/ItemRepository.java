@@ -10,6 +10,7 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOrderByCreatedAtDesc();
+    Item findByIdOrderByCreatedAtDesc(Long itemId);
 
     // 상품 단일 조회 시 viewCnt + 1
     @Modifying
@@ -40,4 +41,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where i.title like %:keyword% or i.content like %:keyword% " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
+
 }

@@ -24,10 +24,18 @@ public class ZzimController {
     }
 
     // 찜 취소
+    // ::TODO 로그인 연결 후 토큰 값으로 회원정보 받아오도록 수정하고 RequestBody 값이랑 Dto 삭제
     @DeleteMapping("items/detail/zzim/{itemId}")
     public ResponseEntity<?> cancelZzim(@PathVariable Long itemId, @RequestBody ZzimRequestDto zzimRequestDto){
         zzimService.cancelZzim(itemId, zzimRequestDto);
         return ResponseEntity.ok().body(Map.of("isZzimed",false,"msg","찜 취소되었습니다."));
+    }
+
+    // 내가 찜한 상품 조회
+    // ::TODO 로그인 연결 후 토큰 값으로 회원정보 받아오도록 수정하고 RequestBody 값이랑 Dto 삭제
+    @GetMapping("items/detail/zzim")
+    public ResponseEntity<?> getZzimItem(@RequestBody ZzimRequestDto zzimRequestDto){
+        return ResponseEntity.ok().body(zzimService.getZzimItem(zzimRequestDto));
     }
 
     // 구매 완료

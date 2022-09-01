@@ -1,15 +1,21 @@
 package com.hanghae.mungnayng.service;
 
+import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.domain.zzim.dto.ZzimRequestDto;
+import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Collections;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +24,7 @@ public class ZzimService {
 
     private final ItemRepository itemRepository;
     private final ZzimRepository zzimRepository;
+    private final ImageRepository imageRepository;
 
     // 찜 하기
     @Transactional
@@ -51,6 +58,49 @@ public class ZzimService {
         zzimRepository.delete(optionalZzim.get());
         int zzimCnt = zzimRepository.countAllByItemId(itemId);
         item.updateZzimCnt(zzimCnt);
+    }
+
+    // 내가 찜한 상품 가져오기
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getZzimItem(ZzimRequestDto zzimRequestDto) {
+        List<Zzim> zzimList = zzimRepository.getZzimZzimedByMe(zzimRequestDto.getNickname());
+        Collections.reverse(zzimList);
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+
+        for (Zzim zzim : zzimList) {
+            Item item = itemRepository.findByIdOrderByCreatedAtDesc(zzim.getItem().getId());
+
+            // 해당 item의 이미지 호출
+            List<Image> imageList = imageRepository.findAllByItemId(item.getId());
+            List<String> imgUrlList = new ArrayList<>();
+            for (Image image : imageList) {
+                System.out.println();
+                imgUrlList.add(image.getImgUrl());
+            }
+
+            itemResponseDtoList.add(
+                    ItemResponseDto.builder()
+                            .id(item.getId())
+//                .isMine(isMine)
+                            .nickname(item.getNickname())
+                            .title(item.getTitle())
+                            .content(item.getContent())
+                            .petCategory(item.getPetCategory())
+                            .itemCategory(item.getItemCategory())
+                            .itemImgs(imgUrlList)
+                            .location(item.getLocation())
+                            .commentCnt(item.getCommentCnt())
+                            .zzimCnt(item.getZzimCnt())
+                            .viewCnt(item.getViewCnt())
+                            .purchasePrice(item.getPurchasePrice())
+                            .sellingPrice(item.getSellingPrice())
+                            .isComplete(item.isComplete())
+                            .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                            .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                            .build()
+            );
+        }
+        return itemResponseDtoList;
     }
 
     // 거래 완료 버튼
