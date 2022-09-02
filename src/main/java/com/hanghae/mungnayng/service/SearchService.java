@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.service;
 
+import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
@@ -9,6 +10,7 @@ import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +26,9 @@ public class SearchService {
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
 
-    // 상품 기본 검색('item - title / content'를 바탕으로)
+    /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Transactional
-    public List<ItemResponseDto> searchItem(String keyword) {
+    public List<ItemResponseDto> searchItem(UserDetails userDetails, String keyword) {
         ItemSearch itemSearch = ItemSearch.builder()
                 // :: TODO 검색한 사람 이름 Member(JWT)에서 꺼내넣기, if문으로 로그인하지 않았을 경우에도 빌드되도록
                 .nickname("김재영")
@@ -39,7 +41,7 @@ public class SearchService {
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemResponseDtoList.add(
-                    buildItemResponseDto(item)
+                    buildItemResponseDto(userDetails, item)
             );
         }
 
@@ -47,9 +49,9 @@ public class SearchService {
         return itemResponseDtoList;
     }
 
-    // :: TODO isMine 및 isZzimed 기능 구현
-    // 공통 작업 - ResponseDto build
-    private ItemResponseDto buildItemResponseDto(Item item) {
+    // :: TODO isZzimed 기능 구현
+    /* 공통 작업 - ResponseDto build */
+    private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         // 해당 item의 이미지 호출
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -59,11 +61,9 @@ public class SearchService {
             imgUrlList.add(image.getImgUrl());
         }
 
-//        boolean isMine;
-//        isMine = itemRequestDto.getNickname().equals("김재영");
         return ItemResponseDto.builder()
                 .id(item.getId())
-//                .isMine(isMine)
+                .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
                 .nickname(item.getNickname())
                 .title(item.getTitle())
                 .content(item.getContent())
@@ -76,18 +76,22 @@ public class SearchService {
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
-                .isComplete(item.isComplete())
+                .IsComplete(item.isComplete())
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
 
-    // 최근 검색어 조회
-    // :: TODO 닉네임 가져오는 로직 추가
-    public List<ItemSearchResponsedto> getSearchWord() {
-        String nickname = "김재영";
-        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
+    /* 최근 검색어 조회 */
+    public List<ItemSearchResponsedto> getSearchWord(UserDetails userDetails) {
         List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
+
+        if (userDetails==null) {    /* 비로그인 시 빈 배열 출력 */
+            return itemSearchResponsedtoList;
+        }
+
+        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
         for (String string : searchWordList) {
             itemSearchResponsedtoList.add(
                     ItemSearchResponsedto.builder()
@@ -97,7 +101,7 @@ public class SearchService {
         }
         return itemSearchResponsedtoList;
     }
-    // 인기 검색어 조회
+    /* 인기 검색어 조회 */
     public List<ItemSearchResponsedto> getPopularSearchWord() {
         List<String> searchWordList = searchRepository.getAllByPopularity();
         List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();

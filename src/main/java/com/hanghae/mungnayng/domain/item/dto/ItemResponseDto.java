@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class ItemResponseDto {
     private Long id;
-    private Boolean isMine;
+    private boolean IsMine;
     private String nickname;
     private String title;
     @Lob
@@ -29,5 +29,5 @@ public class ItemResponseDto {
     private Long sellingPrice;
     private String createdAt;
     private String modifiedAt;
-    private boolean isComplete;
+    private boolean IsComplete;
 }

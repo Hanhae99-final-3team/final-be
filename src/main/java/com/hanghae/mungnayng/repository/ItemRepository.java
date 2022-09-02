@@ -11,37 +11,36 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOrderByCreatedAtDesc();
 
-    // 상품 단일 조회 시 viewCnt + 1
+    /* 상품 단일 조회 시 viewCnt + 1 */
     @Modifying
     @Query("update Item i set i.viewCnt = i.viewCnt + 1 where i.id = :id")
     int addViewCnt(Long id);
 
-    // petCategory = dog / itemCategory = food
-    // 이중 카테고리에 의한 조회
+    /* 이중 카테고리에 의한 조회 */
     @Query("select i from Item i " +
             "where i.petCategory = :petCategory and i.itemCategory = :itemCategory " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByTwoCategory(String petCategory, String itemCategory);
 
-    // 단일 카테고리에 의한 조회 - petCategory
+    /* 단일 카테고리에 의한 조회 - petCategory */
     @Query("select i from Item i " +
             "where i.petCategory = :petCategory " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByPetCategry(String petCategory);
 
-    // 단일 카테고리에 의한 조회 - itemCategory
+    /* 단일 카테고리에 의한 조회 - itemCategory */
     @Query("select i from Item i " +
             "where i.itemCategory = :itemCategory " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByItemCategory(String itemCategory);
 
-    // 상품 기본 검색('item - title / content'를 바탕으로)
+    /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Query("select i from Item i " +
             "where i.title like %:keyword% or i.content like %:keyword% " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
 
-    // 내가 찜한 상품 조회
+    /* 내가 찜한 상품 조회 */
     @Query(nativeQuery = true, value =
     "select * from item i inner join zzim z on i.id = z.item_id " +
             "where z.zzimed_by = :nickname order by z.id desc")

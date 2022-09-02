@@ -45,6 +45,7 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         Member member = memberRepository
                 .findByEmail(loginRequestDto.getEmail()).orElseThrow(() -> new BadRequestException("아이디 혹은 비밀번호를 확인하세요."));
