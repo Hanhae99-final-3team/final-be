@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.member.dto.SignupRequestDto;
 import com.hanghae.mungnayng.exception.BadRequestException;
 import com.hanghae.mungnayng.jwt.JwtProvider;
 import com.hanghae.mungnayng.repository.MemberRepository;
+import com.hanghae.mungnayng.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void signUp(SignupRequestDto signupRequestDto) {
@@ -56,5 +58,10 @@ public class MemberService {
     public void tokenToHeaders(String authorizationToken, String refreshToken, HttpServletResponse response) {
         response.addHeader("Authorization", "Bearer " + authorizationToken);
         response.addHeader("RefreshToken", refreshToken);
+    }
+
+    @Transactional
+    public void logout(Member member) {
+        refreshTokenRepository.deleteByMember(member);
     }
 }

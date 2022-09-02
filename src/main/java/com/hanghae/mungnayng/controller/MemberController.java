@@ -1,15 +1,16 @@
 package com.hanghae.mungnayng.controller;
 
+import com.hanghae.mungnayng.domain.UserDetailsImpl;
+import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.member.dto.EmailCheckRequestDto;
 import com.hanghae.mungnayng.domain.member.dto.LoginRequestDto;
 import com.hanghae.mungnayng.domain.member.dto.SignupRequestDto;
 import com.hanghae.mungnayng.domain.member.dto.SignupResponseDto;
 import com.hanghae.mungnayng.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,4 +38,10 @@ public class MemberController {
         return new SignupResponseDto("로그인 성공.",true);
     }
 
+    @DeleteMapping("/members/logout")
+    public SignupResponseDto logout(@AuthenticationPrincipal UserDetails userDetails) {
+        Member member = ((UserDetailsImpl) userDetails).getMember();
+        memberService.logout(member);
+        return new SignupResponseDto("로그아웃 성공.", true);
+    }
 }
