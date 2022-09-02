@@ -23,8 +23,6 @@ public class JwtProvider {
     private final Key key;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailsService userDetailsService;
-    private static final Long TOKEN_VALID_TIME = 1000L * 60 * 3; // 3m
-
 
     public JwtProvider(@Value("${jwt.secret-key}")String SECRET_KEY,
                        RefreshTokenRepository refreshTokenRepository,
