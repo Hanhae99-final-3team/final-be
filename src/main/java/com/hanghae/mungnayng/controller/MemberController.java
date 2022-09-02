@@ -24,13 +24,13 @@ public class MemberController {
         return new SignupResponseDto("회원가입 성공", true);
     }
 
-    @GetMapping("/members/email-check")// 이메일 가입여부 검사
+    @PostMapping("/members/email-check")// 이메일 가입여부 검사
     public SignupResponseDto emailcheck(@RequestBody EmailCheckRequestDto emailCheckRequestDto) {
         memberService.checkEmailIsDuplicate(emailCheckRequestDto.getEmail());
         return new SignupResponseDto("가입이 가능한 회원입니다.", true);
     }
 
-    @GetMapping("/members/nickname-check")// 이메일 가입여부 검사
+    @PostMapping("/members/nickname-check")// 이메일 가입여부 검사
     public SignupResponseDto nicknamecheck(@RequestBody NicknameCheckRequestDto nicknameCheckRequestDto) {
         memberService.checkNicknameIsDuplicate(nicknameCheckRequestDto.getNickname());
         return new SignupResponseDto("사용 가능한 닉네임입니다.",true);
