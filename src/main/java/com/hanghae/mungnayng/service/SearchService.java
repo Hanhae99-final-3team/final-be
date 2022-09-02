@@ -83,11 +83,15 @@ public class SearchService {
     }
 
     /* 최근 검색어 조회 */
-    // :: TODO 닉네임 가져오는 로직 추가
-    public List<ItemSearchResponsedto> getSearchWord() {
-        String nickname = "김재영";
-        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
+    public List<ItemSearchResponsedto> getSearchWord(UserDetails userDetails) {
         List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
+
+        if (userDetails==null) {    /* 비로그인 시 빈 배열 출력 */
+            return itemSearchResponsedtoList;
+        }
+
+        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
         for (String string : searchWordList) {
             itemSearchResponsedtoList.add(
                     ItemSearchResponsedto.builder()

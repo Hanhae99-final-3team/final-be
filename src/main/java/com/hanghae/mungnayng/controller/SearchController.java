@@ -25,8 +25,8 @@ public class SearchController {
 
     /* 최근 검색어 */
     @GetMapping("items/search")
-    public ResponseEntity<?> getSearchWord() {
-        return ResponseEntity.ok().body(searchService.getSearchWord());
+    public ResponseEntity<?> getSearchWord(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(searchService.getSearchWord(userDetails));
     }
 
     /* 인기 검색어 */
