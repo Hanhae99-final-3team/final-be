@@ -29,7 +29,7 @@ public class ZzimService {
     private final ZzimRepository zzimRepository;
     private final ImageRepository imageRepository;
 
-    // 찜 하기
+    /* 찜 하기 */
     @Transactional
     public void itemZzim(Long itemId, ZzimRequestDto zzimRequestDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(
@@ -48,7 +48,7 @@ public class ZzimService {
         item.updateZzimCnt(zzimCnt);
     }
 
-    // 찜 취소
+    /* 찜 취소 */
     @Transactional
     public void cancelZzim(Long itemId, ZzimRequestDto zzimRequestDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(
@@ -63,7 +63,7 @@ public class ZzimService {
         item.updateZzimCnt(zzimCnt);
     }
 
-    // 내가 찜한 상품 가져오기
+    /* 내가 찜한 상품 가져오기 */
     // :: TODO Member class 연결 후 수정 필요
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getZzimItem(UserDetails userDetails, ZzimRequestDto zzimRequestDto) {
@@ -105,7 +105,7 @@ public class ZzimService {
         return itemResponseDtoList;
     }
 
-    // 거래 완료 버튼
+    /* 거래 완료 버튼 */
     @Transactional
     public Boolean purchaseComplete(Long itemId, ZzimRequestDto zzimRequestDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(

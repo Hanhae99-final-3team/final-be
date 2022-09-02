@@ -26,7 +26,7 @@ public class SearchService {
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
 
-    // 상품 기본 검색('item - title / content'를 바탕으로)
+    /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Transactional
     public List<ItemResponseDto> searchItem(UserDetails userDetails, String keyword) {
         ItemSearch itemSearch = ItemSearch.builder()
@@ -82,7 +82,7 @@ public class SearchService {
                 .build();
     }
 
-    // 최근 검색어 조회
+    /* 최근 검색어 조회 */
     // :: TODO 닉네임 가져오는 로직 추가
     public List<ItemSearchResponsedto> getSearchWord() {
         String nickname = "김재영";
@@ -97,7 +97,7 @@ public class SearchService {
         }
         return itemSearchResponsedtoList;
     }
-    // 인기 검색어 조회
+    /* 인기 검색어 조회 */
     public List<ItemSearchResponsedto> getPopularSearchWord() {
         List<String> searchWordList = searchRepository.getAllByPopularity();
         List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
