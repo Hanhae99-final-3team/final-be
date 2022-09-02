@@ -2,10 +2,7 @@ package com.hanghae.mungnayng.controller;
 
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.member.Member;
-import com.hanghae.mungnayng.domain.member.dto.EmailCheckRequestDto;
-import com.hanghae.mungnayng.domain.member.dto.LoginRequestDto;
-import com.hanghae.mungnayng.domain.member.dto.SignupRequestDto;
-import com.hanghae.mungnayng.domain.member.dto.SignupResponseDto;
+import com.hanghae.mungnayng.domain.member.dto.*;
 import com.hanghae.mungnayng.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +27,12 @@ public class MemberController {
     public SignupResponseDto emailcheck(@RequestBody EmailCheckRequestDto emailCheckRequestDto) {
         memberService.checkEmailIsDuplicate(emailCheckRequestDto.getEmail());
         return new SignupResponseDto("가입이 가능한 회원입니다.",true);
+    }
+
+    @GetMapping("/members/nickname-check")// 이메일 가입여부 검사
+    public SignupResponseDto nicknamecheck(@RequestBody NicknameCheckRequestDto nicknameCheckRequestDto) {
+        memberService.checkNicknameIsDuplicate(nicknameCheckRequestDto.getNickname());
+        return new SignupResponseDto("사용 가능한 닉네임입니다.",true);
     }
 
     @PostMapping("/members/login")

@@ -38,6 +38,13 @@ public class MemberService {
         }
     }
 
+    public void checkNicknameIsDuplicate(String nickname) {
+        boolean isDuplicate = memberRepository.existsByNickname(nickname);
+        if (isDuplicate) {
+            throw new BadRequestException("이미 존재하는 닉네임 입니다.");
+        }
+    }
+
     public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         Member member = memberRepository
                 .findByEmail(loginRequestDto.getEmail()).orElseThrow(() -> new BadRequestException("아이디 혹은 비밀번호를 확인하세요."));
