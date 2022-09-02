@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.domain.item;
 
 import com.hanghae.mungnayng.domain.Timestamped;
+import com.hanghae.mungnayng.domain.comment.Comment;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import lombok.AllArgsConstructor;
@@ -41,8 +42,9 @@ public class Item extends Timestamped {
     @Column
     private String location;
 
-    @Column(columnDefinition = "integer default 0", nullable = false)
-    private int commentCnt;
+    @Column
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comment;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int zzimCnt;

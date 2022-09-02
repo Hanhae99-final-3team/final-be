@@ -3,6 +3,7 @@ package com.hanghae.mungnayng.service;
 import com.hanghae.mungnayng.domain.comment.Comment;
 import com.hanghae.mungnayng.domain.comment.dto.CommentRequestDto;
 import com.hanghae.mungnayng.domain.comment.dto.CommentResponseDto;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
@@ -19,26 +20,32 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    //댓글 생성
+    //*댓글 생성
     @Transactional
     public CommentResponseDto createComment(Member member, Long itemId, CommentRequestDto requestDto) {
+       Item item = itemRepository.findById(itemId)
+               .orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시물 입니다."));
+
         Comment comment = Comment.builder()
+                .item(item)
                 .nickname(member.getNickname())
                 .content(requestDto.getContent())
                 .build();
+
         commentRepository.save(comment);
-        if (!itemId.equals(comment.getItem().getId()))
-            throw new IllegalArgumentException("해당 게시글이 없습니다");
         return CommentResponseDto.All(comment);
     }
 
-    //*댓글 조회(댓글 카운트 값, 게시물 아이디 값 아직 안 넣음)//
-    @Transactional
+    //*댓글 조회(댓글 카운트 값 아직 안 넣음)//
+    @Transactional(readOnly = true)
     public List<CommentResponseDto> getComment(Long itemId) {
-        List<Comment> allByCommentList = commentRepository.findAllById(itemId);
-        return allByCommentList.stream()
-                .map(CommentResponseDto::All)
-                .collect(Collectors.toList());
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 게시물 입니다."));
+            List<Comment> CommentList = commentRepository.findAllByItem_Id(itemId);
+            return CommentList.stream()
+// *원본                   .map(value -> CommentResponseDto.All(value) )
+                    .map(CommentResponseDto::All)
+                    .collect(Collectors.toList());
     }
 //*댓글 수정//
     @Transactional

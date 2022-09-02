@@ -20,16 +20,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Comment extends Timestamped {
     @Id
-    @JoinColumn(name = "commentId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
     private String nickname;
-
-    @Column
-    private LocalDateTime createAt;
 
 //    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @ManyToOne

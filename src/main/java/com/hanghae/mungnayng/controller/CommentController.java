@@ -1,10 +1,13 @@
 package com.hanghae.mungnayng.controller;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.comment.dto.CommentRequestDto;
 import com.hanghae.mungnayng.domain.comment.dto.CommentResponseDto;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.CommentRepository;
+import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +38,11 @@ public ResponseEntity<?> createComment(@AuthenticationPrincipal UserDetailsImpl 
     }
 // *댓글 조회-댓글 카운트랑 작동 확인 후 수정할 것
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.GET)
-    public ResponseEntity<List<CommentResponseDto>> getComment(@PathVariable Long itemId) {
+    public ResponseEntity<?> getComment(@PathVariable Long itemId) {
         List<CommentResponseDto> responseDtoList = commentService.getComment(itemId);
-        Long commentCnt = commentRepository.count();
+        int commentCnt = commentRepository.countByItem_Id(itemId);
         return ResponseEntity.ok()
-                .body((List<CommentResponseDto>) Map.of("itemId",itemId,"commentCnt",commentCnt,"comments", responseDtoList));
+                .body( Map.of("itemId", itemId,"commentCnt", commentCnt,"comments", responseDtoList));
     }
 //*댓글 수정
     @RequestMapping(value = "/items/detail/comments/{itemId}/{commentId}", method = RequestMethod.PUT)

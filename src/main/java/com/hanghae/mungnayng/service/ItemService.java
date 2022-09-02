@@ -55,7 +55,6 @@ public class ItemService {
                 imageRepository.save(image);
             }
         }
-
         return buildItemResponseDto(userDetails, item);
     }
 
@@ -125,6 +124,7 @@ public class ItemService {
         return itemRepository.addViewCnt(itemId);
     }
 
+
     /* 상품 수정 - detail */
     @Transactional
     public ItemResponseDto updateItem(UserDetails userDetails, Long itemId, ItemRequestDto itemRequestDto) throws IOException {
@@ -188,7 +188,6 @@ public class ItemService {
                 .itemCategory(item.getItemCategory())
                 .itemImgs(imgUrlList)
                 .location(item.getLocation())
-                .commentCnt(item.getCommentCnt())
                 .zzimCnt(item.getZzimCnt())
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())

@@ -96,7 +96,7 @@ public class ZzimService {
                             .itemCategory(item.getItemCategory())
                             .itemImgs(imgUrlList)
                             .location(item.getLocation())
-                            .commentCnt(item.getCommentCnt())
+//                            .commentCnt(item.getCommentCnt())
                             .zzimCnt(item.getZzimCnt())
                             .viewCnt(item.getViewCnt())
                             .purchasePrice(item.getPurchasePrice())
