@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.service;
 
+import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
@@ -9,6 +10,7 @@ import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +66,7 @@ public class ZzimService {
     // 내가 찜한 상품 가져오기
     // :: TODO Member class 연결 후 수정 필요
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getZzimItem(ZzimRequestDto zzimRequestDto) {
+    public List<ItemResponseDto> getZzimItem(UserDetails userDetails, ZzimRequestDto zzimRequestDto) {
 
         List<Item> itemList = itemRepository.getAllItemListByZzimedId(zzimRequestDto.getNickname());
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
@@ -81,7 +83,7 @@ public class ZzimService {
             itemResponseDtoList.add(
                     ItemResponseDto.builder()
                             .id(item.getId())
-//                .isMine(isMine)
+                            .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
                             .nickname(item.getNickname())
                             .title(item.getTitle())
                             .content(item.getContent())
@@ -94,7 +96,7 @@ public class ZzimService {
                             .viewCnt(item.getViewCnt())
                             .purchasePrice(item.getPurchasePrice())
                             .sellingPrice(item.getSellingPrice())
-                            .isComplete(item.isComplete())
+                            .IsComplete(item.isComplete())
                             .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .build()

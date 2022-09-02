@@ -11,7 +11,6 @@ import java.util.List;
 public class ItemRequestDto {
     private String title;
     private String content;
-    private String nickname;
     private String petCategory;
     private String itemCategory;
     private String location;

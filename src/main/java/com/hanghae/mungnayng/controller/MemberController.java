@@ -7,6 +7,7 @@ import com.hanghae.mungnayng.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,13 +21,13 @@ public class MemberController {
     @PostMapping("/members/signup")
     public SignupResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
         memberService.signUp(signupRequestDto);
-        return new SignupResponseDto("회원가입 성공",true);
+        return new SignupResponseDto("회원가입 성공", true);
     }
 
     @GetMapping("/members/email-check")// 이메일 가입여부 검사
     public SignupResponseDto emailcheck(@RequestBody EmailCheckRequestDto emailCheckRequestDto) {
         memberService.checkEmailIsDuplicate(emailCheckRequestDto.getEmail());
-        return new SignupResponseDto("가입이 가능한 회원입니다.",true);
+        return new SignupResponseDto("가입이 가능한 회원입니다.", true);
     }
 
     @GetMapping("/members/nickname-check")// 이메일 가입여부 검사
@@ -38,7 +39,7 @@ public class MemberController {
     @PostMapping("/members/login")
     public SignupResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         memberService.login(loginRequestDto, response);
-        return new SignupResponseDto("로그인 성공.",true);
+        return new SignupResponseDto("로그인 성공.", true);
     }
 
     @PostMapping("/members/logout")
