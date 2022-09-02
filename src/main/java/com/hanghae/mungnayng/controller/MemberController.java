@@ -38,7 +38,7 @@ public class MemberController {
         return new SignupResponseDto("로그인 성공.",true);
     }
 
-    @DeleteMapping("/members/logout")
+    @PostMapping("/members/logout")
     public SignupResponseDto logout(@AuthenticationPrincipal UserDetails userDetails) {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         memberService.logout(member);
