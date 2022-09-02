@@ -34,7 +34,7 @@ public class Member extends Timestamped {
         this.nickname = nickname;
         this.password = password;
 //        this.kakaoId = null;
-        role = "USER";
+        role = "ROLE_USER";
     }
 
     public static Member of(String email, String nickname, String password) {
