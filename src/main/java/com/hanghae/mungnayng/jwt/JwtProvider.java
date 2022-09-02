@@ -34,7 +34,7 @@ public class JwtProvider {
     }
 
     public String createAuthorizationToken(String memberEmail, String roles) {
-        Long tokenInvailedTime = 1000L * 60 * 3; // 3m
+        Long tokenInvailedTime = 1000L * 60 * 60; // 60m
         return this.createToken(memberEmail, roles, tokenInvailedTime);
     }
 
