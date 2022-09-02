@@ -9,6 +9,7 @@ import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.util.aws.S3uploader;
+import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -165,7 +166,7 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    // :: TODO isZzimed 기능 구현
+    /* TODO isZzimed 기능 구현 -> ItemResponseDto를 ruturn는 모든 곳에*/
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 

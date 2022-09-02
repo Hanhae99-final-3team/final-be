@@ -5,7 +5,6 @@ import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
-import com.hanghae.mungnayng.domain.zzim.dto.ZzimRequestDto;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
@@ -31,17 +30,18 @@ public class ZzimService {
 
     /* 찜 하기 */
     @Transactional
-    public void itemZzim(Long itemId, ZzimRequestDto zzimRequestDto) {
+    public void itemZzim(Long itemId, UserDetails userDetails) {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, zzimRequestDto.getNickname());
+        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId,nickname);
         if (optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
         Zzim zzim = Zzim.builder()
                 .item(item)
-                .zzimedBy(zzimRequestDto.getNickname())
+                .zzimedBy(nickname)
                 .build();
         zzimRepository.save(zzim);
         int zzimCnt = zzimRepository.countAllByItemId(itemId);
@@ -50,11 +50,12 @@ public class ZzimService {
 
     /* 찜 취소 */
     @Transactional
-    public void cancelZzim(Long itemId, ZzimRequestDto zzimRequestDto) {
+    public void cancelZzim(Long itemId, UserDetails userDetails) {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, zzimRequestDto.getNickname());
+        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, nickname);
         if (!optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
@@ -64,11 +65,15 @@ public class ZzimService {
     }
 
     /* 내가 찜한 상품 가져오기 */
-    // :: TODO Member class 연결 후 수정 필요
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getZzimItem(UserDetails userDetails, ZzimRequestDto zzimRequestDto) {
+    public List<ItemResponseDto> getZzimItem(UserDetails userDetails) {
+        if (userDetails == null){
+            throw new IllegalArgumentException("유효하지 않은 요청입니다.");
+        }
 
-        List<Item> itemList = itemRepository.getAllItemListByZzimedId(zzimRequestDto.getNickname());
+        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+
+        List<Item> itemList = itemRepository.getAllItemListByZzimedId(nickname);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
 
         for (Item item : itemList) {
@@ -83,7 +88,7 @@ public class ZzimService {
             itemResponseDtoList.add(
                     ItemResponseDto.builder()
                             .id(item.getId())
-                            .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
+                            .IsMine(item.getNickname().equals(nickname))
                             .nickname(item.getNickname())
                             .title(item.getTitle())
                             .content(item.getContent())
@@ -107,11 +112,17 @@ public class ZzimService {
 
     /* 거래 완료 버튼 */
     @Transactional
-    public Boolean purchaseComplete(Long itemId, ZzimRequestDto zzimRequestDto) {
+    public Boolean purchaseComplete(Long itemId, UserDetails userDetails) {
+        if(userDetails == null){
+            throw new IllegalArgumentException("유효하지 않은 요청입니다.");
+        }
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        // ::TODO 로그인 유효성 검사 추가
+        if (!item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname())) {
+            throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
+        }
+
         if (item.isComplete() == false) {
             item.updateIsComplete(true);
             return true;
