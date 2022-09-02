@@ -5,9 +5,8 @@ import com.hanghae.mungnayng.domain.comment.dto.CommentRequestDto;
 import com.hanghae.mungnayng.domain.comment.dto.CommentResponseDto;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.CommentRepository;
-import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.service.CommentService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,21 +17,18 @@ import java.util.Map;
 
 
 
+@RequiredArgsConstructor
 @RestController
-@AllArgsConstructor
 public class CommentController {
     private final CommentService commentService;
     private final CommentRepository commentRepository;
-    private  final ItemRepository itemRepository;
-//    private final CommentResponseDto commentResponseDto;
 
     //*댓글 생성
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.POST)
 public ResponseEntity<?> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                       @PathVariable Long itemId,
-                                       @RequestBody CommentRequestDto requestDto){
+        @PathVariable Long itemId, @RequestBody CommentRequestDto requestDto) {
         Member member = userDetails.getMember();
-        CommentResponseDto ResponseDto = commentService.createComment(member, itemId, requestDto);
+        CommentResponseDto ResponseDto = commentService.createComment(member,itemId, requestDto);
         return ResponseEntity.ok()
                 .body(ResponseDto);
     }

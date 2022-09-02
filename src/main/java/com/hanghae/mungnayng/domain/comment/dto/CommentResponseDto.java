@@ -6,11 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentResponseDto {
     private Long commentId;
     private String content;
