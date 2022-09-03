@@ -23,6 +23,6 @@ public class Image {
     private String imgUrl;
 
     @JoinColumn(name = "item_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
 }
