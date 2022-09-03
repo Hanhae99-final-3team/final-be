@@ -28,14 +28,14 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String nickname;
 
-//    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @ManyToOne
     @JoinColumn(name = "itemId")
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name="memberId")
+    @JoinColumn(name = "memberId")
     private Member member;
+
     public void update(CommentRequestDto commentRequestDto) {
         this.content = commentRequestDto.getContent();
 

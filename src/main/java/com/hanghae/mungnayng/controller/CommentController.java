@@ -15,48 +15,49 @@ import java.util.List;
 import java.util.Map;
 
 
-
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
     private final CommentService commentService;
     private final CommentRepository commentRepository;
 
-    //*댓글 생성
+    /*댓글 생성*/
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.POST)
-public ResponseEntity<?> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
-        @PathVariable Long itemId, @RequestBody CommentRequestDto requestDto) {
+    public ResponseEntity<?> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                           @PathVariable Long itemId, @RequestBody CommentRequestDto requestDto) {
         Member member = userDetails.getMember();
-        CommentResponseDto ResponseDto = commentService.createComment(member,itemId, requestDto);
+        CommentResponseDto ResponseDto = commentService.createComment(member, itemId, requestDto);
         return ResponseEntity.ok()
                 .body(ResponseDto);
     }
-// *댓글 조회-댓글 카운트랑 작동 확인 후 수정할 것
+
+    /*댓글 조회*/
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.GET)
     public ResponseEntity<?> getComment(@PathVariable Long itemId) {
         List<CommentResponseDto> responseDtoList = commentService.getComment(itemId);
         int commentCnt = commentRepository.countByItem_Id(itemId);
         return ResponseEntity.ok()
-                .body( Map.of("itemId", itemId,"commentCnt", commentCnt,"comments", responseDtoList));
+                .body(Map.of("itemId", itemId, "commentCnt", commentCnt, "comments", responseDtoList));
     }
-//*댓글 수정
+
+    /*댓글 수정*/
     @RequestMapping(value = "/items/detail/comments/{itemId}/{commentId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long itemId, @PathVariable Long commentId,
                                            @RequestBody CommentRequestDto requestDto) {
         Member member = userDetails.getMember();
-    CommentResponseDto responseDto = commentService.updateComment(member, itemId, commentId, requestDto);
+        CommentResponseDto responseDto = commentService.updateComment(member, itemId, commentId, requestDto);
         return ResponseEntity.ok()
                 .body(responseDto);
     }
 
-    //*댓글 삭제
+    /*댓글 삭제*/
     @RequestMapping(value = "/items/detail/comments/{itemId}/{commentId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long itemId, @PathVariable Long commentId) {
         Member member = userDetails.getMember();
         commentService.deleteComment(member, itemId, commentId);
-        return ResponseEntity.ok().body(Map.of("success",true,"msg","삭제 성공"));
+        return ResponseEntity.ok().body(Map.of("success", true, "msg", "삭제 성공"));
 
     }
 

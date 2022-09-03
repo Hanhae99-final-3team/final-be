@@ -14,7 +14,7 @@ public class CommentResponseDto {
     private Long commentId;
     private String content;
     private String nickname;
-    private String  createdAt;
+    private String createdAt;
     private String modifiedAt;
     private Boolean isMine;
 

@@ -20,11 +20,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ItemRepository itemRepository;
 
-    //*댓글 생성
+    /*댓글 생성*/
     @Transactional
     public CommentResponseDto createComment(Member member, Long itemId, CommentRequestDto requestDto) {
-       Item item = itemRepository.findById(itemId)
-               .orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시물 입니다."));
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물 입니다."));
 
         Comment comment = Comment.builder()
                 .item(item)
@@ -36,18 +36,19 @@ public class CommentService {
         return CommentResponseDto.All(comment);
     }
 
-    //*댓글 조회(댓글 카운트 값 아직 안 넣음)//
+    /*댓글 조회*/
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComment(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 게시물 입니다."));
-            List<Comment> CommentList = commentRepository.findAllByItem_Id(itemId);
-            return CommentList.stream()
-// *원본                   .map(value -> CommentResponseDto.All(value) )
-                    .map(CommentResponseDto::All)
-                    .collect(Collectors.toList());
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물 입니다."));
+        List<Comment> CommentList = commentRepository.findAllByItem_Id(itemId);
+        return CommentList.stream()
+/*원본                  .map(value -> CommentResponseDto.All(value) )*/
+                .map(CommentResponseDto::All)
+                .collect(Collectors.toList());
     }
-//*댓글 수정//
+
+    /*댓글 수정*/
     @Transactional
     public CommentResponseDto updateComment(Member member, Long itemId, Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
@@ -61,7 +62,7 @@ public class CommentService {
         return CommentResponseDto.All(comment);
     }
 
-    //*댓글 삭제 미완//
+    /*댓글 삭제*/
     @Transactional
     public void deleteComment(Member member, Long itemId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
@@ -75,12 +76,4 @@ public class CommentService {
     }
 
 }
-
-
-//    @Transactional(readOnly = true)
-//public Comment isPresentComment(Long itemId, Long commentId) {
-//        Optional<Comment> comment = Optional.ofNullable(commentRepository.findByItemIdAndId(itemId, commentId));
-//        return comment.orElseThrow(
-//                ()-> new IllegalArgumentException("잘못된 요청입니다.")
-
 
