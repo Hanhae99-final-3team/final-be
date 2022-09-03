@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
 @RequiredArgsConstructor
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public SignupResponseDto handle(BadRequestException e) {

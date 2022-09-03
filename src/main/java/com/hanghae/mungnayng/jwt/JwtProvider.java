@@ -24,9 +24,9 @@ public class JwtProvider {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailsService userDetailsService;
 
-    public JwtProvider(@Value("${jwt.secret-key}")String SECRET_KEY,
+    public JwtProvider(@Value("${jwt.secret-key}") String SECRET_KEY,
                        RefreshTokenRepository refreshTokenRepository,
-                       UserDetailsService userDetailsService){
+                       UserDetailsService userDetailsService) {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.refreshTokenRepository = refreshTokenRepository;
@@ -34,18 +34,18 @@ public class JwtProvider {
     }
 
     public String createAuthorizationToken(String memberEmail, String roles) {
-        Long tokenInvailedTime = 1000L * 60 * 3; // 3m
+        Long tokenInvailedTime = 1000L * 60 * 60; /* 60m */
         return this.createToken(memberEmail, roles, tokenInvailedTime);
     }
 
     public String createRefreshToken(Member member, String roles) {
-        Long tokenInvailedTime = 1000L * 60 * 60 * 24; // 1d
+        Long tokenInvailedTime = 1000L * 60 * 60 * 24; /* 1d */
         String refreshToken = this.createToken(member.getEmail(), roles, tokenInvailedTime);
 
         RefreshToken refreshTokenObject = refreshTokenRepository.findByMember(member)
                 .orElse(RefreshToken.builder()
-                .member(member)
-                .build());
+                        .member(member)
+                        .build());
         refreshTokenObject.updateTokenValue(refreshToken);
 
         refreshTokenRepository.save(refreshTokenObject);
@@ -53,16 +53,16 @@ public class JwtProvider {
         return refreshToken;
     }
 
-    public String createToken(String memberEmail, String roles, Long tokenInvailedTime){
-        Claims claims = Jwts.claims().setSubject(memberEmail); // claims 생성 및 payload 설정
-        claims.put("roles", roles); // 권한 설정, key/ value 쌍으로 저장
+    public String createToken(String memberEmail, String roles, Long tokenInvailedTime) {
+        Claims claims = Jwts.claims().setSubject(memberEmail); /* claims 생성 및 payload 설정 */
+        claims.put("roles", roles); /* 권한 설정, key/ value 쌍으로 저장 */
         Date date = new Date();
         return Jwts.builder()
-                .setClaims(claims) // 발행 유저 정보 저장
-                .setIssuedAt(date) // 발행 시간 저장
-                .setExpiration(new Date(date.getTime() + tokenInvailedTime)) // 토큰 유효 시간 저장
-                .signWith(key, SignatureAlgorithm.HS256) // 해싱 알고리즘 및 키 설정
-                .compact(); // 생성
+                .setClaims(claims) /* 발행 유저 정보 저장 */
+                .setIssuedAt(date) /* 발행 시간 저장 */
+                .setExpiration(new Date(date.getTime() + tokenInvailedTime)) /* 토큰 유효 시간 저장 */
+                .signWith(key, SignatureAlgorithm.HS256) /* 해싱 알고리즘 및 키 설정 */
+                .compact(); /* 생성 */
     }
 
     public boolean validateToken(String token) {
@@ -73,7 +73,7 @@ public class JwtProvider {
             log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token, 만료된 JWT token 입니다.");
-            // 토큰 재발급 요청 처리
+            /* TODO : 토큰 재발급 요청 처리 추가 필요 */
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
