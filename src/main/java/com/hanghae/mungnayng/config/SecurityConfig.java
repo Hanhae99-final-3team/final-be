@@ -19,9 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
+@EnableWebSecurity
+@Configuration
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
@@ -38,15 +38,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // origin
+        /* origin */
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        // method
+        /* method */
         configuration.setAllowedMethods(Arrays.asList("*"));
-        // header
+        /* header */
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 
-        // header에 토큰 허용
+        /* header에 토큰 허용 */
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("RefreshToken");
 
@@ -59,14 +59,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable()
-                // jwt 필터 설정
+                /* jwt 필터 설정 */
                 .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .and()
-                //세션 끄기
+                /* 세션 끄기 */
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                //인증없이 사용 가능한 api 설정
+                /* 인증없이 사용 가능한 api 설정 */
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();

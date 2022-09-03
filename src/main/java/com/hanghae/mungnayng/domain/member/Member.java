@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Entity
 public class Member extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,7 @@ public class Member extends Timestamped {
     @Column(nullable = false)
     private String password;
 
+    /* TODO : 소셜로그인 */
 //    @Column(unique = true)
 //    private Long kakaoId;
     private String role;
