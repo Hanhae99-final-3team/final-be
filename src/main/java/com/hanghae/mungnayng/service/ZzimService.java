@@ -5,6 +5,7 @@ import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
+import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
@@ -27,6 +28,7 @@ public class ZzimService {
     private final ItemRepository itemRepository;
     private final ZzimRepository zzimRepository;
     private final ImageRepository imageRepository;
+    private final CommentRepository commentRepository;
 
     /* 찜 하기 */
     @Transactional
@@ -70,7 +72,6 @@ public class ZzimService {
         if (userDetails == null){
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
-        int commentCnt = commentRepository.countByItem_Id(item.getId());
         String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
 
         List<Item> itemList = itemRepository.getAllItemListByZzimedId(nickname);
@@ -84,6 +85,8 @@ public class ZzimService {
                 System.out.println();
                 imgUrlList.add(image.getImgUrl());
             }
+
+            int commentCnt = commentRepository.countByItem_Id(item.getId());
             
             itemResponseDtoList.add(
                     ItemResponseDto.builder()

@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
+import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.SearchRepository;
@@ -25,6 +26,7 @@ public class SearchService {
     private final ItemRepository itemRepository;
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
+    private final CommentRepository commentRepository;
 
     /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Transactional

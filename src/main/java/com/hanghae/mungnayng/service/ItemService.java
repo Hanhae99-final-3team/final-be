@@ -140,8 +140,9 @@ public class ItemService {
         item.update(itemRequestDto);
 
         List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
+
+        imageRepository.deleteAllByItemId(itemId);
         if (multipartFileList != null) {
-            imageRepository.deleteAllByItemId(itemId);
             for (MultipartFile multipartFile : multipartFileList) {
                 String url = s3uploader.Uploader(multipartFile);
                 Image image = Image.builder()
@@ -151,7 +152,6 @@ public class ItemService {
                 imageRepository.save(image);
             }
         }
-
 
         return buildItemResponseDto(userDetails, item);
     }
