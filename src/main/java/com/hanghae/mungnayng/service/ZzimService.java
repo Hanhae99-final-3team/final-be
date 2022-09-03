@@ -70,12 +70,12 @@ public class ZzimService {
         if (userDetails == null){
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
-
+        int commentCnt = commentRepository.countByItem_Id(item.getId());
         String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
 
         List<Item> itemList = itemRepository.getAllItemListByZzimedId(nickname);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
-
+        
         for (Item item : itemList) {
             // 해당 item의 이미지 호출
             List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -84,7 +84,7 @@ public class ZzimService {
                 System.out.println();
                 imgUrlList.add(image.getImgUrl());
             }
-
+            
             itemResponseDtoList.add(
                     ItemResponseDto.builder()
                             .id(item.getId())
@@ -96,7 +96,7 @@ public class ZzimService {
                             .itemCategory(item.getItemCategory())
                             .itemImgs(imgUrlList)
                             .location(item.getLocation())
-                            .commentCnt(item.getCommentCnt())
+                            .commentCnt(commentCnt)
                             .zzimCnt(item.getZzimCnt())
                             .viewCnt(item.getViewCnt())
                             .purchasePrice(item.getPurchasePrice())

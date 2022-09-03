@@ -52,6 +52,7 @@ public class SearchService {
     // :: TODO isZzimed 기능 구현
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
+        int commentCnt = commentRepository.countByItem_Id(item.getId());
 
         // 해당 item의 이미지 호출
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -70,8 +71,8 @@ public class SearchService {
                 .petCategory(item.getPetCategory())
                 .itemCategory(item.getItemCategory())
                 .itemImgs(imgUrlList)
+                .commentCnt(commentCnt)
                 .location(item.getLocation())
-                .commentCnt(item.getCommentCnt())
                 .zzimCnt(item.getZzimCnt())
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())

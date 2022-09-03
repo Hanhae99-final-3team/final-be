@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.member.Member;
+import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.util.aws.S3uploader;
@@ -28,9 +29,10 @@ public class ItemService {
     private final S3uploader s3uploader;
     private final ImageRepository imageRepository;
 
+    private final  CommentRepository commentRepository;
+
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
-
         Item item = Item.builder()
                 .title(itemRequestDto.getTitle())
                 .content(itemRequestDto.getContent())
@@ -55,7 +57,6 @@ public class ItemService {
                 imageRepository.save(image);
             }
         }
-
         return buildItemResponseDto(userDetails, item);
     }
 
@@ -125,6 +126,7 @@ public class ItemService {
         return itemRepository.addViewCnt(itemId);
     }
 
+
     /* 상품 수정 - detail */
     @Transactional
     public ItemResponseDto updateItem(UserDetails userDetails, Long itemId, ItemRequestDto itemRequestDto) throws IOException {
@@ -168,8 +170,10 @@ public class ItemService {
 
     /* TODO isZzimed 기능 구현 -> ItemResponseDto를 ruturn는 모든 곳에*/
     /* 공통 작업 - ResponseDto build */
+
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
+        int commentCnt = commentRepository.countByItem_Id(item.getId());
         // 해당 item의 이미지 호출
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
         List<String> imgUrlList = new ArrayList<>();
@@ -188,8 +192,8 @@ public class ItemService {
                 .itemCategory(item.getItemCategory())
                 .itemImgs(imgUrlList)
                 .location(item.getLocation())
-                .commentCnt(item.getCommentCnt())
                 .zzimCnt(item.getZzimCnt())
+                .commentCnt(commentCnt)
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
