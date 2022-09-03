@@ -1,21 +1,16 @@
 package com.hanghae.mungnayng.controller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.comment.dto.CommentRequestDto;
 import com.hanghae.mungnayng.domain.comment.dto.CommentResponseDto;
-import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.CommentRepository;
-import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
