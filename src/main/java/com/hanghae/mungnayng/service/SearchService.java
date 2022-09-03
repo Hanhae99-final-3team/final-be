@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
+import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.SearchRepository;
@@ -25,13 +26,19 @@ public class SearchService {
     private final ItemRepository itemRepository;
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
+    private final CommentRepository commentRepository;
 
     /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Transactional
     public List<ItemResponseDto> searchItem(UserDetails userDetails, String keyword) {
+        String nickname = "null";
+        if (userDetails != null){
+            nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        }
+
         ItemSearch itemSearch = ItemSearch.builder()
-                // :: TODO 검색한 사람 이름 Member(JWT)에서 꺼내넣기, if문으로 로그인하지 않았을 경우에도 빌드되도록
-                .nickname("김재영")
+                /* TODO 검색한 사람 이름 Member(JWT)에서 꺼내넣기, if문으로 로그인하지 않았을 경우에도 빌드되도록 */
+                .nickname(nickname)
                 .searchWord(keyword)
                 .build();
         searchRepository.save(itemSearch);
