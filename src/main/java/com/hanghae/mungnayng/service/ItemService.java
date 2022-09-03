@@ -12,6 +12,10 @@ import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +66,8 @@ public class ItemService {
 
     /* 전체 상품 조회 */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getAllItem(UserDetails userDetails) {
-        List<Item> itemList = itemRepository.findAllByOrderByCreatedAtDesc();
+    public List<ItemResponseDto> getAllItem(UserDetails userDetails, Pageable pageable) {
+        Page<Item> itemList = itemRepository.findAll(pageable);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemResponseDtoList.add(
@@ -75,8 +79,8 @@ public class ItemService {
 
     /* 카테고리에 따른 상품 조회(이중 카테고리) */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getItemByTwoCategory(UserDetails userDetails, String petCategory, String itemCategory) {
-        List<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory);
+    public List<ItemResponseDto> getItemByTwoCategory(UserDetails userDetails, String petCategory, String itemCategory, Pageable pageable) {
+        Page<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory, pageable);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemResponseDtoList.add(
@@ -87,8 +91,8 @@ public class ItemService {
     }
 
     /* 카테고리에 따른 상품 조회(단일 카테고리 - petCategory) */
-    public List<ItemResponseDto> getItemByPetCategory(UserDetails userDetails, String petCategory) {
-        List<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory);
+    public List<ItemResponseDto> getItemByPetCategory(UserDetails userDetails, String petCategory, Pageable pageable) {
+        Page<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory, pageable);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemResponseDtoList.add(
@@ -99,8 +103,8 @@ public class ItemService {
     }
 
     /* 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory) */
-    public List<ItemResponseDto> getItemByItemCategory(UserDetails userDetails, String itemCategory) {
-        List<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory);
+    public List<ItemResponseDto> getItemByItemCategory(UserDetails userDetails, String itemCategory, Pageable pageable) {
+        Page<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory, pageable);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemResponseDtoList.add(

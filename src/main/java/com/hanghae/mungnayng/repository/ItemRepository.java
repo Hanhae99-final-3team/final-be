@@ -1,6 +1,8 @@
 package com.hanghae.mungnayng.repository;
 
 import com.hanghae.mungnayng.domain.item.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +11,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findAllByOrderByCreatedAtDesc();
+    Page<Item> findAll(Pageable pageable);
 
     /* 상품 단일 조회 시 viewCnt + 1 */
     @Modifying
@@ -18,21 +20,18 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     /* 이중 카테고리에 의한 조회 */
     @Query("select i from Item i " +
-            "where i.petCategory = :petCategory and i.itemCategory = :itemCategory " +
-            "order by i.createdAt desc ")
-    List<Item> getAllItemListByTwoCategory(String petCategory, String itemCategory);
+            "where i.petCategory = :petCategory and i.itemCategory = :itemCategory ")
+    Page<Item> getAllItemListByTwoCategory(String petCategory, String itemCategory, Pageable pageable);
 
     /* 단일 카테고리에 의한 조회 - petCategory */
     @Query("select i from Item i " +
-            "where i.petCategory = :petCategory " +
-            "order by i.createdAt desc ")
-    List<Item> getAllItemListByPetCategry(String petCategory);
+            "where i.petCategory = :petCategory ")
+    Page<Item> getAllItemListByPetCategry(String petCategory, Pageable pageable);
 
     /* 단일 카테고리에 의한 조회 - itemCategory */
     @Query("select i from Item i " +
-            "where i.itemCategory = :itemCategory " +
-            "order by i.createdAt desc ")
-    List<Item> getAllItemListByItemCategory(String itemCategory);
+            "where i.itemCategory = :itemCategory ")
+    Page<Item> getAllItemListByItemCategory(String itemCategory, Pageable pageable);
 
     /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Query("select i from Item i " +
