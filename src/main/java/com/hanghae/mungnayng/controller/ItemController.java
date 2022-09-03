@@ -1,30 +1,27 @@
 package com.hanghae.mungnayng.controller;
 
-import com.hanghae.mungnayng.domain.UserDetailsImpl;
-import com.hanghae.mungnayng.domain.item.Item;
+
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
-import com.hanghae.mungnayng.domain.member.Member;
-import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.service.ItemService;
-import com.hanghae.mungnayng.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
+
 
 @RequiredArgsConstructor
 @RestController
 public class ItemController {
-    private final ItemRepository itemRepository;
-
     private final ItemService itemService;
-    private final MemberService memberService;
 
     /* 상품 등록 */
     @PostMapping("items")
@@ -35,26 +32,31 @@ public class ItemController {
 
     /* 전체 상품 조회 */
     @GetMapping("items")
-    public ResponseEntity<?> getAllItem(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(itemService.getAllItem(userDetails));
+    public ResponseEntity<?> getAllItem(@AuthenticationPrincipal UserDetails userDetails,
+                                        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getAllItem(userDetails, pageable));
     }
 
     /* 카테고리에 따른 상품 조회(단일 카테고리 - petCategory) */
     @GetMapping("items/petcategory")
-    public ResponseEntity<?> getItemByPetCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("petCategory") String petCategory) {
-        return ResponseEntity.ok().body(itemService.getItemByPetCategory(userDetails, petCategory));
+    public ResponseEntity<?> getItemByPetCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("petCategory") String petCategory,
+                                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getItemByPetCategory(userDetails, petCategory, pageable));
     }
 
     /* 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory) */
     @GetMapping("items/itemcategory")
-    public ResponseEntity<?> getItemByItemCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("itemCategory") String itemCategory) {
-        return ResponseEntity.ok().body(itemService.getItemByItemCategory(userDetails, itemCategory));
+    public ResponseEntity<?> getItemByItemCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("itemCategory") String itemCategory,
+                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getItemByItemCategory(userDetails, itemCategory, pageable));
     }
 
     /* 카테고리에 따른 상품 조회(이중 카테고리) */
     @GetMapping("items/twocategory")
-    public ResponseEntity<?> getItemByTwoCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory) {
-        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(userDetails, petCategory, itemCategory));
+    public ResponseEntity<?> getItemByTwoCategory(@AuthenticationPrincipal UserDetails userDetails,
+                                                  @RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory,
+                                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(userDetails, petCategory, itemCategory, pageable));
     }
 
     /* 단일 상품 조회 - detail */

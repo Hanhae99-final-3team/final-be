@@ -6,10 +6,8 @@ import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
-import com.hanghae.mungnayng.repository.CommentRepository;
-import com.hanghae.mungnayng.repository.ImageRepository;
-import com.hanghae.mungnayng.repository.ItemRepository;
-import com.hanghae.mungnayng.repository.SearchRepository;
+import com.hanghae.mungnayng.domain.zzim.Zzim;
+import com.hanghae.mungnayng.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +26,7 @@ public class SearchService {
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
     private final CommentRepository commentRepository;
+    private final ZzimRepository zzimRepository;
 
     /* 상품 기본 검색('item - title / content'를 바탕으로) */
     @Transactional
@@ -37,7 +37,6 @@ public class SearchService {
         }
 
         ItemSearch itemSearch = ItemSearch.builder()
-                /* TODO 검색한 사람 이름 Member(JWT)에서 꺼내넣기, if문으로 로그인하지 않았을 경우에도 빌드되도록 */
                 .nickname(nickname)
                 .searchWord(keyword)
                 .build();
@@ -56,7 +55,6 @@ public class SearchService {
         return itemResponseDtoList;
     }
 
-    // :: TODO isZzimed 기능 구현
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
         int commentCnt = commentRepository.countByItem_Id(item.getId());
@@ -67,6 +65,13 @@ public class SearchService {
         for (Image image : imageList) {
             System.out.println();
             imgUrlList.add(image.getImgUrl());
+        }
+
+        /* IsZzimed - 사용자가 찜한 상품인지 아닌지 확인 */
+        boolean isZzimed = false;
+        if(userDetails != null) {
+            Optional<Zzim> zzim = zzimRepository.findByItemIdAndZzimedBy(item.getId(), userDetails.getUsername());
+            if(zzim.isPresent()) isZzimed = true;
         }
 
         return ItemResponseDto.builder()
@@ -85,6 +90,7 @@ public class SearchService {
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
                 .IsComplete(item.isComplete())
+                .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
