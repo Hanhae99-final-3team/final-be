@@ -105,6 +105,7 @@ public class ZzimService {
                             .purchasePrice(item.getPurchasePrice())
                             .sellingPrice(item.getSellingPrice())
                             .IsComplete(item.isComplete())
+                            .IsZzimed(true)    /* 내가 찜한 상품 조회이니 당연 isZzimed는 항상 true */
                             .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .build()

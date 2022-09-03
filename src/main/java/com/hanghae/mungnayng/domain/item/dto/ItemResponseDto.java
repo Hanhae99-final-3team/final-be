@@ -30,4 +30,5 @@ public class ItemResponseDto {
     private String createdAt;
     private String modifiedAt;
     private boolean IsComplete;
+    private boolean IsZzimed;
 }

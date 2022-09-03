@@ -6,9 +6,11 @@ import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.member.Member;
+import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
+import com.hanghae.mungnayng.repository.ZzimRepository;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +37,7 @@ public class ItemService {
     private final ImageRepository imageRepository;
 
     private final CommentRepository commentRepository;
-
+    private final ZzimRepository zzimRepository;
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
         Item item = Item.builder()
@@ -173,18 +176,25 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    /* TODO isZzimed 기능 구현 -> ItemResponseDto를 ruturn는 모든 곳에*/
-    /* 공통 작업 - ResponseDto build */
 
+    /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         int commentCnt = commentRepository.countByItem_Id(item.getId());
-        // 해당 item의 이미지 호출
+
+        /* 해당 item의 이미지 호출 */
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
         List<String> imgUrlList = new ArrayList<>();
         for (Image image : imageList) {
             System.out.println();
             imgUrlList.add(image.getImgUrl());
+        }
+
+        /* IsZzimed - 사용자가 찜한 상품인지 아닌지 확인 */
+        boolean isZzimed = false;
+        if(userDetails != null) {
+            Optional<Zzim> zzim = zzimRepository.findByItemIdAndZzimedBy(item.getId(), userDetails.getUsername());
+            if(zzim.isPresent()) isZzimed = true;
         }
 
         return ItemResponseDto.builder()
@@ -203,6 +213,7 @@ public class ItemService {
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
                 .IsComplete(item.isComplete())
+                .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
