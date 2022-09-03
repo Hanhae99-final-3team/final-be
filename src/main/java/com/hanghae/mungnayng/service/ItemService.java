@@ -29,7 +29,7 @@ public class ItemService {
     private final S3uploader s3uploader;
     private final ImageRepository imageRepository;
 
-    private final  CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
@@ -139,9 +139,10 @@ public class ItemService {
 
         item.update(itemRequestDto);
 
+        imageRepository.deleteAllByItemId(itemId);
+
         List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
 
-        imageRepository.deleteAllByItemId(itemId);
         if (multipartFileList != null) {
             for (MultipartFile multipartFile : multipartFileList) {
                 String url = s3uploader.Uploader(multipartFile);
@@ -158,7 +159,7 @@ public class ItemService {
 
     /* 상품 삭제 - detail */
     @Transactional
-    public void deleteItem(UserDetails userDetails , Long itemId) {
+    public void deleteItem(UserDetails userDetails, Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("조회하시려는 상품이 존재하지 않습니다.")
         );
