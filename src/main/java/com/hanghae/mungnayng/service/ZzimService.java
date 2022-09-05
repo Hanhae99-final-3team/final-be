@@ -9,12 +9,11 @@ import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
+import com.hanghae.mungnayng.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -108,6 +107,7 @@ public class ZzimService {
                             .IsZzimed(true)    /* 내가 찜한 상품 조회이니 당연 isZzimed는 항상 true */
                             .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                            .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                             .build()
             );
         }

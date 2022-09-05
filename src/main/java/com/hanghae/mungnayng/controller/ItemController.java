@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,5 +78,11 @@ public class ItemController {
     public ResponseEntity<?> deleteItem(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long itemId) {
         itemService.deleteItem(userDetails, itemId);
         return ResponseEntity.ok().body(Map.of("msg", "게시글이 삭제되었습니다.", "success", true));
+    }
+
+    /* 내가 등록한 상품 조회 */
+    @GetMapping("items/mypage")
+    public ResponseEntity<?> getMyItem(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok().body(itemService.getMyItem(userDetails));
     }
 }

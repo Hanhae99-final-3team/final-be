@@ -5,24 +5,20 @@ import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
-import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
+import com.hanghae.mungnayng.util.TimeUtil;
 import com.hanghae.mungnayng.util.aws.S3uploader;
-import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,6 +34,7 @@ public class ItemService {
 
     private final CommentRepository commentRepository;
     private final ZzimRepository zzimRepository;
+
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
         Item item = Item.builder()
@@ -176,6 +173,23 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
+    /* 내가 등록한 상품 조회 */
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
+        if(userDetails == null){
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
+        List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+
+        for(Item item : itemList){
+            itemResponseDtoList.add(
+                    buildItemResponseDto(userDetails,item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
 
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
@@ -199,7 +213,7 @@ public class ItemService {
 
         return ItemResponseDto.builder()
                 .id(item.getId())
-                .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
+                .IsMine(userDetails != null && item.getNickname().equals(userDetails.getUsername()))
                 .nickname(item.getNickname())
                 .title(item.getTitle())
                 .content(item.getContent())
@@ -216,6 +230,7 @@ public class ItemService {
                 .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                 .build();
     }
 }

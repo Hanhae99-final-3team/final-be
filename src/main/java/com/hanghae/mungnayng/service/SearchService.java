@@ -8,6 +8,7 @@ import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.repository.*;
+import com.hanghae.mungnayng.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class SearchService {
 
         return ItemResponseDto.builder()
                 .id(item.getId())
-                .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
+                .IsMine(userDetails != null && item.getNickname().equals(userDetails.getUsername()))
                 .nickname(item.getNickname())
                 .title(item.getTitle())
                 .content(item.getContent())
@@ -93,6 +94,7 @@ public class SearchService {
                 .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                 .build();
     }
 
