@@ -33,11 +33,17 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where i.itemCategory = :itemCategory ")
     Page<Item> getAllItemListByItemCategory(String itemCategory, Pageable pageable);
 
-    /* 상품 기본 검색('item - title / content'를 바탕으로) */
+    /* 상품 기본 검색 - 최신순 정렬('item - title / content'를 바탕으로) */
     @Query("select i from Item i " +
             "where i.title like %:keyword% or i.content like %:keyword% " +
             "order by i.createdAt desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
+
+    /* 상품 기본 검색 - 인기순 정렬 */
+    @Query("select i from Item i " +
+            "where i.title like %:keyword% or i.content like %:keyword% " +
+            "order by i.viewCnt desc ")
+    List<Item> getAllItemListByOrderByPopularity(String keyword);
 
     /* 내가 찜한 상품 조회 */
     @Query(nativeQuery = true, value =
