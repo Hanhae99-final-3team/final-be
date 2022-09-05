@@ -43,7 +43,7 @@ public class SearchController {
 
     /* 인기 검색어 */
     @ApiOperation(value = "가장 빈번하게 검색된 keyword 상위 20개를 불러오는 메소드")
-    @GetMapping("items/search/popular")
+    @GetMapping("items/search/popularity")
     public ResponseEntity<?> getPopularSearchWord() {
         return ResponseEntity.ok().body(searchService.getPopularSearchWord());
     }
