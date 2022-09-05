@@ -29,6 +29,7 @@ public class ItemResponseDto {
     private Long sellingPrice;
     private String createdAt;
     private String modifiedAt;
+    private String time;
     private boolean IsComplete;
     private boolean IsZzimed;
 }
