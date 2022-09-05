@@ -216,7 +216,7 @@ public class ItemService {
 
         return ItemResponseDto.builder()
                 .id(item.getId())
-                .IsMine(userDetails != null && item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname()))
+                .IsMine(userDetails != null && item.getNickname().equals(userDetails.getUsername()))
                 .nickname(item.getNickname())
                 .title(item.getTitle())
                 .content(item.getContent())
