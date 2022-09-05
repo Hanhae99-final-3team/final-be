@@ -176,6 +176,23 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
+    /* 내가 등록한 상품 조회 */
+    @Transactional(readOnly = true)
+    public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
+        if(userDetails == null){
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
+        List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+
+        for(Item item : itemList){
+            itemResponseDtoList.add(
+                    buildItemResponseDto(userDetails,item)
+            );
+        }
+        return itemResponseDtoList;
+    }
+
 
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {

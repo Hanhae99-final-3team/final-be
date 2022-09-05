@@ -44,4 +44,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     "select * from item i inner join zzim z on i.id = z.item_id " +
             "where z.zzimed_by = :nickname order by z.id desc")
     List<Item> getAllItemListByZzimedId(String nickname);
+
+    /* 내가 등록한 상품 조회 */
+    @Query("select i from Item i " +
+            "where i.nickname = :nickname order by i.createdAt desc ")
+    List<Item> getAllItemByNickname(String nickname);
 }

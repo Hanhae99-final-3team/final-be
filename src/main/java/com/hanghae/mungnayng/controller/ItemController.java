@@ -80,4 +80,10 @@ public class ItemController {
         itemService.deleteItem(userDetails, itemId);
         return ResponseEntity.ok().body(Map.of("msg", "게시글이 삭제되었습니다.", "success", true));
     }
+
+    /* 내가 등록한 상품 조회 */
+    @GetMapping("items/mypage")
+    public ResponseEntity<?> getMyItem(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok().body(itemService.getMyItem(userDetails));
+    }
 }

@@ -30,7 +30,7 @@ public class ZzimController {
     }
 
     /* 내가 찜한 상품 조회 */
-    @GetMapping("items/detail/zzim")
+    @GetMapping("items/mypage/zzim")
     public ResponseEntity<?> getZzimItem(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok().body(zzimService.getZzimItem(userDetails));
     }
