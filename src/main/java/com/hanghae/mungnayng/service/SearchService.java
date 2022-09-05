@@ -29,12 +29,12 @@ public class SearchService {
     private final CommentRepository commentRepository;
     private final ZzimRepository zzimRepository;
 
-    /* 상품 기본 검색('item - title / content'를 바탕으로) */
+    /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
     @Transactional
     public List<ItemResponseDto> searchItem(UserDetails userDetails, String keyword) {
         String nickname = "null";
         if (userDetails != null){
-            nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+            nickname = (userDetails.getUsername());
         }
 
         ItemSearch itemSearch = ItemSearch.builder()
@@ -43,7 +43,7 @@ public class SearchService {
                 .build();
         searchRepository.save(itemSearch);
 
-        // return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성
+        /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
         List<Item> itemList = itemRepository.getAllItemListByTitleOrContent(keyword);
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
@@ -52,6 +52,31 @@ public class SearchService {
             );
         }
 
+        return itemResponseDtoList;
+    }
+
+    /* 상품 기본 검색 - 인기순('item - title / content'를 바탕으로) */
+    @Transactional
+    public List<ItemResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String keyword) {
+        String nickname = "null";
+        if (userDetails != null){
+            nickname = (userDetails.getUsername());
+        }
+
+        ItemSearch itemSearch = ItemSearch.builder()
+                .nickname(nickname)
+                .searchWord(keyword)
+                .build();
+        searchRepository.save(itemSearch);
+
+        /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
+        List<Item> itemList = itemRepository.getAllItemListByOrderByPopularity(keyword);
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        for (Item item : itemList) {
+            itemResponseDtoList.add(
+                    buildItemResponseDto(userDetails, item)
+            );
+        }
 
         return itemResponseDtoList;
     }
@@ -106,7 +131,7 @@ public class SearchService {
             return itemSearchResponsedtoList;
         }
 
-        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        String nickname = (userDetails.getUsername());
         List<String> searchWordList = searchRepository.getAllByNickname(nickname);
         for (String string : searchWordList) {
             itemSearchResponsedtoList.add(

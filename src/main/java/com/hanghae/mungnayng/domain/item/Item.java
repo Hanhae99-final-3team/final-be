@@ -4,6 +4,7 @@ import com.hanghae.mungnayng.domain.Timestamped;
 import com.hanghae.mungnayng.domain.comment.Comment;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
+import com.hanghae.mungnayng.domain.zzim.Zzim;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,6 +64,9 @@ public class Item extends Timestamped {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> image;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Zzim> zzim;
 
     public void update(ItemRequestDto itemRequestDto){
         this.title = itemRequestDto.getTitle();
