@@ -73,7 +73,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     /* 마이페이지 - 차트용 데이터 호출(내가 찜한 상품 가격의 총합) */
     @Query(nativeQuery = true, value =
-            "select sum(selling_price) from item i left join zzim z " +
+            "select sum(selling_price) from item i inner join zzim z " +
                     "on z.item_id = i.id where z.zzimed_by = :nickname")
     int getThirdItemsPriceSum(String nickname);
 }
