@@ -26,10 +26,9 @@ import java.util.List;
 public class SwaggerConfig {
 
 
-
     @Bean   /* Docket : Swagger 설정을 할 수 있게 도와주는 클래스 */
     public Docket api() {
-TypeResolver typeResolver = new TypeResolver();
+        TypeResolver typeResolver = new TypeResolver();
 
         return new Docket(DocumentationType.OAS_30)    /* Swagger Ui Authorize 사용 위한 Swagger 3.0 ver 적용 */
                 .alternateTypeRules(    /* Swagger Ui에서 Pageable 관련 Request Param key 변경 위한 설정(pageNumber -> page) */
@@ -71,7 +70,7 @@ TypeResolver typeResolver = new TypeResolver();
         @ApiModelProperty(value = "페이지 번호")
         private Integer page;
 
-        @ApiModelProperty(value = "한 페이지 당 불러올 정보(게시글) 수", allowableValues="range[0, 100]")
+        @ApiModelProperty(value = "한 페이지 당 불러올 정보(게시글) 수", allowableValues = "range[0, 100]")
         private Integer size;
     }
 
