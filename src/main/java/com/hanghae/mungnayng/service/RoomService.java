@@ -61,7 +61,7 @@ public class RoomService {
         @Transactional
         public void deleteRoomInfo(Member member, Long roomInfoId ) {
                 RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
-                        .orElseThrow(()-> new IllegalArgumentException("존재하지 채팅창입니다."));
+                        .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 채팅창입니다."));
                 if(!member.getMemberId().equals(roomInfo.getMember().getMemberId()))
                 throw new IllegalArgumentException("채팅방에 존재하지 않는 유저입니다.");
                 roomInfoRepository.delete(roomInfo);

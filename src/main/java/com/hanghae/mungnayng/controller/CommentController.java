@@ -6,6 +6,8 @@ import com.hanghae.mungnayng.domain.comment.dto.CommentResponseDto;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.service.CommentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
+@Api(tags = {"댓글 API 정보를 제공하는 Controller"})
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
     private final CommentService commentService;
     private final CommentRepository commentRepository;
 
-    /*댓글 생성*/
+    @ApiOperation(value = "댓글 등록 메소드")
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.POST)
     public ResponseEntity<?> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long itemId, @RequestBody CommentRequestDto requestDto) {
@@ -31,7 +33,7 @@ public class CommentController {
                 .body(ResponseDto);
     }
 
-    /*댓글 조회*/
+    @ApiOperation(value = "댓글 조회 메소드")
     @RequestMapping(value = "/items/detail/comments/{itemId}", method = RequestMethod.GET)
     public ResponseEntity<?> getComment(@PathVariable Long itemId) {
         List<CommentResponseDto> responseDtoList = commentService.getComment(itemId);
@@ -40,7 +42,7 @@ public class CommentController {
                 .body(Map.of("itemId", itemId, "commentCnt", commentCnt, "comments", responseDtoList));
     }
 
-    /*댓글 수정*/
+    @ApiOperation(value = "댓글 수정 메소드")
     @RequestMapping(value = "/items/detail/comments/{itemId}/{commentId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long itemId, @PathVariable Long commentId,
@@ -51,7 +53,7 @@ public class CommentController {
                 .body(responseDto);
     }
 
-    /*댓글 삭제*/
+    @ApiOperation(value = "댓글 삭제 메소드")
     @RequestMapping(value = "/items/detail/comments/{itemId}/{commentId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long itemId, @PathVariable Long commentId) {

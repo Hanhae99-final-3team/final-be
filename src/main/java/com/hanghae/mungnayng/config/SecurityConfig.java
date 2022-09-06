@@ -57,13 +57,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers().frameOptions().sameOrigin();
+        http.headers().frameOptions().sameOrigin().disable();
         http.cors()
                 .and()
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/chat/**").permitAll();
+                .antMatchers("/**").permitAll();
         http.csrf().disable()
                 /* jwt 필터 설정 */
                 .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
@@ -76,6 +76,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
+
+
         return http.build();
     }
 }
