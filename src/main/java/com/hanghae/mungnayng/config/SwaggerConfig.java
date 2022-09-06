@@ -1,15 +1,21 @@
 package com.hanghae.mungnayng.config;
 
+import com.fasterxml.classmate.TypeResolver;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,10 +25,16 @@ import java.util.List;
 @EnableWebMvc
 public class SwaggerConfig {
 
+
+
     @Bean   /* Docket : Swagger 설정을 할 수 있게 도와주는 클래스 */
     public Docket api() {
+TypeResolver typeResolver = new TypeResolver();
 
         return new Docket(DocumentationType.OAS_30)    /* Swagger Ui Authorize 사용 위한 Swagger 3.0 ver 적용 */
+                .alternateTypeRules(    /* Swagger Ui에서 Pageable 관련 Request Param key 변경 위한 설정(pageNumber -> page) */
+                        AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(Page.class)))
                 .securityContexts(Arrays.asList(securityContext()))    /* Swagger Ui에서 JWT 토큰 값을 넣기 위한 설정 */
                 .securitySchemes(Arrays.asList(apiKey()))   /* Swagger Ui에서 JWT 토큰 값을 넣기 위한 설정 */
                 .apiInfo(this.apiInfo())
@@ -50,6 +62,17 @@ public class SwaggerConfig {
     /* 버튼 클릭 시 입력값 설정 - JWT를 인증 헤더로 포함하도록 ApiKey를 정의*/
     private ApiKey apiKey() {
         return new ApiKey("JWT", "Authorization", "header");    /* keyname 설정에 유의 - 토큰 헤더 명 기입 */
+    }
+
+    @Getter
+    @Setter
+    @ApiModel
+    static class Page {
+        @ApiModelProperty(value = "페이지 번호")
+        private Integer page;
+
+        @ApiModelProperty(value = "한 페이지 당 불러올 정보(게시글) 수", allowableValues="range[0, 100]")
+        private Integer size;
     }
 
     private ApiInfo apiInfo() {
