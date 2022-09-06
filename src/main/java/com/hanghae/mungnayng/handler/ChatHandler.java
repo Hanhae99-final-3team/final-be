@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.handler;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -43,4 +44,8 @@ public class ChatHandler extends TextWebSocketHandler {
         log.info(session + " 클라이언트 접속 해제");
         list.remove(session);
     }
+
+/*이미지 전송*/
+//    @Override
+//    public  handleBinaryMessage(WebSocketSession session, BinaryMessage message){}
 }

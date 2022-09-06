@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.domain.Room;
 
+import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,17 @@ public class RoomDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RoomInfo> roomInfo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="room_info_id", nullable = false)
+    private RoomInfo roomInfo;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    public RoomDetail(RoomInfo roominfo, Member member) {
+        this.roomInfo = roominfo;
+        this.member = member;
+    }
 }

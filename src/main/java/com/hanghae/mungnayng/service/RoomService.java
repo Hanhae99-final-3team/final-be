@@ -2,6 +2,8 @@ package com.hanghae.mungnayng.service;
 
 
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
+import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
+import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.MemberRepository;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,5 +65,20 @@ public class RoomService {
                 if(!member.getMemberId().equals(roomInfo.getMember().getMemberId()))
                 throw new IllegalArgumentException("채팅방에 존재하지 않는 유저입니다.");
                 roomInfoRepository.delete(roomInfo);
+        }
+
+        public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
+                RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
+                        .orElseThrow(()->new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
+                if(!me.getNickname().equals(roomInfo.getNickname()))
+                throw new IllegalArgumentException("자신의 채팅방이 아닙니다.");
+
+                for(Long id : inviteDto.getMemberId() ) {
+                        Member member = memberRepository.findById(id)
+                                .orElseThrow(()-> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
+                        RoomDetail roomDetail = roomDetailRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, id)
+                                .orElse(new RoomDetail(roomInfo, member));
+                        roomDetailRepository.save(roomDetail);
+                }
         }
 }
