@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomInviteDto {
-    List<Long> memberId;
+    private Long memberId;
 }

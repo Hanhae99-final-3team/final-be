@@ -1,10 +1,8 @@
 package com.hanghae.mungnayng.domain.Room.Dto;
 
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
-import com.hanghae.mungnayng.domain.Timestamped;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter

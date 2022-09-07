@@ -47,13 +47,13 @@ public class StompChatController {
 
     @MessageMapping(value = "/room/invite/{memberId}")
     public void invite(@DestinationVariable String memberId, RoomInviteDto inviteDto) {
-        Member member = new Member();
-//        long parsedmemberId = Long.parseLong(memberId);
-        RoomInfoResponseDto responseDto = roomService.createRoom(member.getMemberId());/*채팅방 개설*/
+//        Member member = new Member();
+        long parsedmemberId = Long.parseLong(memberId);
+        RoomInfoResponseDto responseDto = roomService.createRoom(parsedmemberId);/*채팅방 개설*/
         log.info("채팅방 개설 완료");
         template.convertAndSend("/sub/room/invite/" + memberId, responseDto);
 
-        roomService.inviteRoom(member, responseDto.getRoomInfoId(), inviteDto);/*나와 상대를 개설 채팅방으로 입장*/
+        roomService.inviteRoom(parsedmemberId, responseDto.getRoomInfoId(), inviteDto);/*나와 상대를 개설 채팅방으로 입장*/
 
     }
 }

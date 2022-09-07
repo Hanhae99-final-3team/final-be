@@ -28,8 +28,8 @@ public class RoomDetail {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public RoomDetail(RoomInfo roominfo, Member member) {
-        this.roomInfo = roominfo;
+    public RoomDetail(RoomInfo roomInfo, Member member) {
+        this.roomInfo = roomInfo;
         this.member = member;
     }
 }
