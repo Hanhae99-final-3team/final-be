@@ -1,8 +1,10 @@
 package com.hanghae.mungnayng.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.member.dto.*;
+import com.hanghae.mungnayng.service.KakaoService;
 import com.hanghae.mungnayng.service.MemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MemberController {
 
     private final MemberService memberService;
+    private final KakaoService kakaoService;
 
     /* 회원 가입 */
     @ApiOperation(value = "회원가입 메소드")
@@ -59,5 +62,12 @@ public class MemberController {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         memberService.logout(member);
         return ResponseEntity.ok(new SignupResponseDto("로그아웃 성공.", true));
+    }
+
+    /* 카카오 로그인 */
+    @ApiOperation(value = "카카오 로그인 콜백 메소드")
+    @GetMapping("/members/kakao/callback")
+    public ResponseEntity<?> kakaoLogin(@RequestParam(value = "code") String code, HttpServletResponse response) throws JsonProcessingException {
+        return ResponseEntity.ok(kakaoService.kakaoLogin(code, response));
     }
 }

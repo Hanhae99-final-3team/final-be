@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.domain.member;
 
 import com.hanghae.mungnayng.domain.Timestamped;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 @Entity
 public class Member extends Timestamped {
     @Id
@@ -25,20 +27,23 @@ public class Member extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    /* TODO : 소셜로그인 */
-//    @Column(unique = true)
-//    private Long kakaoId;
+    @Column(unique = true)
+    private Long kakaoId;
+
     private String role;
 
     public Member(String email, String nickname, String password) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
-//        this.kakaoId = null;
+        this.kakaoId = null;
         role = "ROLE_USER";
     }
-
-    public static Member of(String email, String nickname, String password) {
-        return new Member(email, nickname, password);
+    public Member(String email, String nickname, String password, Long kakaoId) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.kakaoId = kakaoId;
+        role = "ROLE_USER";
     }
 }
