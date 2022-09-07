@@ -8,10 +8,9 @@ import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Api(tags = {"검색(상품 검색) API 정보를 제공하는 Controller"})    /* Class를 Swagger의 Resource로 표시, tags -> Swagger UI 페이지에 노출 될 태그 설명 */
 @RequiredArgsConstructor
@@ -39,6 +38,14 @@ public class SearchController {
     @GetMapping("items/search")
     public ResponseEntity<?> getSearchWord(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok().body(searchService.getSearchWord(userDetails));
+    }
+
+    /* 최근 검색어 전체 삭제 */
+    @ApiOperation(value = "본인이 최근 검색한 keyword 전체 삭제 메소드")
+    @DeleteMapping("items/search")
+    public ResponseEntity<?> deleteAllSearchWord(@AuthenticationPrincipal UserDetails userDetails){
+        searchService.deleteAllSearchWord(userDetails);
+        return ResponseEntity.ok().body(Map.of("msg", "최근 검색어 전체 삭제 완료", "success", true));
     }
 
     /* 인기 검색어 */

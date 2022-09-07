@@ -142,6 +142,13 @@ public class SearchService {
         }
         return itemSearchResponsedtoList;
     }
+
+    /* 최근 검색어 전체 삭제 */
+    public void deleteAllSearchWord(UserDetails userDetails){
+        List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNickname(userDetails.getUsername());
+        searchRepository.deleteAll(itemSearchList);
+    }
+
     /* 인기 검색어 조회 */
     public List<ItemSearchResponsedto> getPopularSearchWord() {
         List<String> searchWordList = searchRepository.getAllByPopularity();

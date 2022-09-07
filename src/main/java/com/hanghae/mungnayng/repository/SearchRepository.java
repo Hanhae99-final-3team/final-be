@@ -19,4 +19,9 @@ public interface SearchRepository extends JpaRepository<ItemSearch, Long> {
             "select search_word from item_search " +
                     "Group By search_word ORDER BY COUNT(search_word) DESC LIMIT 20")
     List<String> getAllByPopularity();
+
+    /* 최근 검색어 전체 조회 */
+    @Query(nativeQuery = true, value =
+            "select * from item_search i where i.nickname = :nickname")
+    List<ItemSearch> getAllSearchWordByNickname(String nickname);
 }
