@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.service;
 
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.member.dto.LoginRequestDto;
+import com.hanghae.mungnayng.domain.member.dto.LoginResponseDto;
 import com.hanghae.mungnayng.domain.member.dto.SignupRequestDto;
 import com.hanghae.mungnayng.exception.BadRequestException;
 import com.hanghae.mungnayng.jwt.JwtProvider;
@@ -46,7 +47,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         Member member = memberRepository
                 .findByEmail(loginRequestDto.getEmail()).orElseThrow(() -> new BadRequestException("아이디 혹은 비밀번호를 확인하세요."));
         checkPassword(loginRequestDto.getPassword(), member.getPassword());
@@ -54,6 +55,7 @@ public class MemberService {
         String accessToken = jwtProvider.createAuthorizationToken(member.getEmail(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken(member, member.getRole());
         tokenToHeaders(accessToken, refreshToken, response);
+        return new LoginResponseDto(member.getNickname(), true);
     }
 
     private void checkPassword(String password, String encodedPassword) {
