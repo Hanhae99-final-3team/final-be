@@ -71,8 +71,6 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
-
-
         return http.build();
     }
 }
