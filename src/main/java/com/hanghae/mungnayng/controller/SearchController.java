@@ -40,9 +40,17 @@ public class SearchController {
         return ResponseEntity.ok().body(searchService.getSearchWord(userDetails));
     }
 
+    /* 최근 검색어 개별 삭제 */
+    @ApiOperation(value = "개별 검색 keyword 삭제 메소드")
+    @DeleteMapping("items/search")
+    public ResponseEntity<?> deleteSerachWord(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("searchWord") String searchWord){
+        searchService.deleteSearchWord(userDetails, searchWord);
+        return ResponseEntity.ok().body(Map.of("msg", "검색 키워드 삭제 완료", "success", true));
+    }
+
     /* 최근 검색어 전체 삭제 */
     @ApiOperation(value = "본인이 최근 검색한 keyword 전체 삭제 메소드")
-    @DeleteMapping("items/search")
+    @DeleteMapping("items/search/all")
     public ResponseEntity<?> deleteAllSearchWord(@AuthenticationPrincipal UserDetails userDetails){
         searchService.deleteAllSearchWord(userDetails);
         return ResponseEntity.ok().body(Map.of("msg", "최근 검색어 전체 삭제 완료", "success", true));

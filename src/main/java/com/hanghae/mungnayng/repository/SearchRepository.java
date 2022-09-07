@@ -24,4 +24,10 @@ public interface SearchRepository extends JpaRepository<ItemSearch, Long> {
     @Query(nativeQuery = true, value =
             "select * from item_search i where i.nickname = :nickname")
     List<ItemSearch> getAllSearchWordByNickname(String nickname);
+
+    /* RequestParam으로 받아온 검색어를 Member가 검색한 기록이 있는지 확인, List로 반환 */
+    @Query(nativeQuery = true,
+            value = "select * from item_search i " +
+                    "where i.nickname = :nickname and i.search_word = :searchWord")
+    List<ItemSearch> getAllSearchWordByNicknameAndSearchWord(String nickname, String searchWord);
 }

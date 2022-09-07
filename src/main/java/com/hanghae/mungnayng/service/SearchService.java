@@ -143,8 +143,20 @@ public class SearchService {
         return itemSearchResponsedtoList;
     }
 
+    /* 최근 검색어 개별 삭제*/
+    public void deleteSearchWord(UserDetails userDetails, String searchWord){
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
+        List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNicknameAndSearchWord(userDetails.getUsername(),searchWord);
+        searchRepository.deleteAll(itemSearchList);
+    }
+
     /* 최근 검색어 전체 삭제 */
     public void deleteAllSearchWord(UserDetails userDetails){
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
         List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNickname(userDetails.getUsername());
         searchRepository.deleteAll(itemSearchList);
     }
