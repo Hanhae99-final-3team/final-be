@@ -96,4 +96,11 @@ public class ItemController {
     public ResponseEntity<?> getMyItem(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok().body(itemService.getMyItem(userDetails));
     }
+
+    /* 마이페이지 - 차트 */
+    @ApiOperation(value = "마이페이지 - 차트 데이터 호출 메소드")
+    @GetMapping("items/mypage/charts")
+    public ResponseEntity<?> getMyChart(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok().body(itemService.getMyChart(userDetails));
+    }
 }

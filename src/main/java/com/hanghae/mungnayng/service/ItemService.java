@@ -3,6 +3,7 @@ package com.hanghae.mungnayng.service;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
+import com.hanghae.mungnayng.domain.item.dto.ChartResponseDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -176,20 +178,65 @@ public class ItemService {
     /* 내가 등록한 상품 조회 */
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
-        if(userDetails == null){
+        if (userDetails == null) {
             throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
         }
         List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
 
-        for(Item item : itemList){
+        for (Item item : itemList) {
             itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails,item)
+                    buildItemResponseDto(userDetails, item)
             );
         }
         return itemResponseDtoList;
     }
 
+    /* 마이페이지 차트 호출 */
+    @Transactional(readOnly = true)
+    public List<ChartResponseDto> getMyChart(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
+        }
+        List<ChartResponseDto> chartResponseDtoList = new ArrayList<>();
+
+        int sumMyItemsPrice = 0;    /* 자기 등록 상품 가격 총합 */
+        List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
+        if (!itemList.isEmpty()) {
+            sumMyItemsPrice = itemRepository.getFirstItemsPriceSum(userDetails.getUsername());
+        }
+        chartResponseDtoList.add(
+                ChartResponseDto.builder()
+                        .name("A")
+                        .price(sumMyItemsPrice)
+                        .build()
+        );
+
+        int sumMyItemsPriceSold = 0;    /* 판매 완료된 자기 등록 상품 가격 총합 */
+        List<Item> seconditemList = itemRepository.getAllSoldItemByNickname(userDetails.getUsername());
+        if (!seconditemList.isEmpty()) {
+            sumMyItemsPriceSold = itemRepository.getSecondItemsPriceSum(userDetails.getUsername());
+        }
+        chartResponseDtoList.add(
+                ChartResponseDto.builder()
+                        .name("B")
+                        .price(sumMyItemsPriceSold)
+                        .build()
+        );
+
+        int sumPriceThatIZzimed = 0;    /* 내가 찜한 상품 가격 총합 */
+        List<Item> thirdItemList = itemRepository.getAllItemListByZzimedId(userDetails.getUsername());
+        if (!thirdItemList.isEmpty()) {
+            sumPriceThatIZzimed = itemRepository.getThirdItemsPriceSum(userDetails.getUsername());
+        }
+        chartResponseDtoList.add(
+                ChartResponseDto.builder()
+                        .name("C")
+                        .price(sumPriceThatIZzimed)
+                        .build()
+        );
+        return chartResponseDtoList;
+    }
 
     /* 공통 작업 - ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
@@ -206,9 +253,9 @@ public class ItemService {
 
         /* IsZzimed - 사용자가 찜한 상품인지 아닌지 확인 */
         boolean isZzimed = false;
-        if(userDetails != null) {
+        if (userDetails != null) {
             Optional<Zzim> zzim = zzimRepository.findByItemIdAndZzimedBy(item.getId(), userDetails.getUsername());
-            if(zzim.isPresent()) isZzimed = true;
+            if (zzim.isPresent()) isZzimed = true;
         }
 
         return ItemResponseDto.builder()

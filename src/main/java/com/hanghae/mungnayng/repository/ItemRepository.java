@@ -55,4 +55,25 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i from Item i " +
             "where i.nickname = :nickname order by i.createdAt desc ")
     List<Item> getAllItemByNickname(String nickname);
+
+    /* 마이페이지 - 차트용 데이터 호출(자기 등록 상품 가격의 총합) */
+    @Query("select sum(i.sellingPrice) from Item i " +
+            "where i.nickname = :nickname group by i.nickname")
+    int getFirstItemsPriceSum(String nickname);
+
+    /* 내가 등록한 상품 중 판매 완료 상품 조회 */
+    @Query("select i from Item i " +
+            "where i.nickname = :nickname and i.isComplete = true")
+    List<Item> getAllSoldItemByNickname(String nickname);
+
+    /* 마이페이지 - 차트용 데이터 호출(판매 완료된 자기 등록 상품 가격의 총합) */
+    @Query("select sum(i.sellingPrice) from Item i " +
+            "where i.isComplete = true and i.nickname = :nickname group by i.nickname")
+    int getSecondItemsPriceSum(String nickname);
+
+    /* 마이페이지 - 차트용 데이터 호출(내가 찜한 상품 가격의 총합) */
+    @Query(nativeQuery = true, value =
+            "select sum(selling_price) from item i inner join zzim z " +
+                    "on z.item_id = i.id where z.zzimed_by = :nickname")
+    int getThirdItemsPriceSum(String nickname);
 }
