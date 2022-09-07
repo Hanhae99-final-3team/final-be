@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.domain.Room;
 
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RoomDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +28,8 @@ public class RoomDetail {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public RoomDetail(RoomInfo roominfo, Member member) {
-        this.roomInfo = roominfo;
+    public RoomDetail(RoomInfo roomInfo, Member member) {
+        this.roomInfo = roomInfo;
         this.member = member;
     }
 }
