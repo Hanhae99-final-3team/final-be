@@ -37,6 +37,7 @@ public class RoomService {
                 memberRepository.findById(member.getMemberId())
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
                 RoomInfo roomInfo = RoomInfo.builder()
+                        .member(member)
                         .nickname(member.getNickname())
                         .roomDetail(new ArrayList<>())
                         .build();
@@ -86,12 +87,12 @@ public class RoomService {
         }
 
 
-        public void inviteRoom(Long memberId, Long roomId, RoomInviteDto requestDto) {
-
-                Member member = memberRepository.findById(memberId).orElseThrow();
-
-                inviteRoom(member, roomId, requestDto);
-        }
+//        public void inviteRoom(Long memberId, Long roomId, RoomInviteDto requestDto) {
+//
+//                Member member = memberRepository.findById(memberId).orElseThrow();
+//
+//                inviteRoom(member, roomId, requestDto);
+//        }
 
         public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
                 RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
