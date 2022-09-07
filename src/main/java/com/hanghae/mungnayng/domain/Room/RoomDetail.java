@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.domain.Room;
 
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RoomDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

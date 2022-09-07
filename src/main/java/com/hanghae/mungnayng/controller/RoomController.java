@@ -24,7 +24,7 @@ public class RoomController {
     @PostMapping(value = "/roomInfo")
     public ResponseEntity<?> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails) {
      Member member = userDetails.getMember();
-    roomService.createRoom(member.getMemberId());
+    roomService.createRoom(member);
         return ResponseEntity.ok().body(Map.of("msg","생성 완료"));
     }
 
@@ -32,7 +32,7 @@ public class RoomController {
     @GetMapping(value = "/roomInfo")
     public ResponseEntity<?> getRoomInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
-        List<RoomInfoResponseDto> ResponseDtos= roomService.getRoomInfo(member);
+        List<RoomInfoResponseDto> ResponseDtos = roomService.getRoomInfo(member);
         return ResponseEntity.ok().body(ResponseDtos);
     }
 

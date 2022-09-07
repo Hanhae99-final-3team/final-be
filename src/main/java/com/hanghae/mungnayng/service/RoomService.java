@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.service;
 
 
+import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoRequestDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,20 +29,36 @@ public class RoomService {
         private final MemberRepository memberRepository;
 
         public RoomInfoResponseDto createRoom(Long memberId) {
-                Member member = memberRepository.findById(memberId)
+                Member member = memberRepository.findById(memberId).orElseThrow();
+                return createRoom(member);
+        }
+
+        public RoomInfoResponseDto createRoom(Member member) {
+                memberRepository.findById(member.getMemberId())
                         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
                 RoomInfo roomInfo = RoomInfo.builder()
-                        .member(member)
                         .nickname(member.getNickname())
+                        .roomDetail(new ArrayList<>())
                         .build();
+                RoomDetail roomDetail = RoomDetail.builder()
+                        .member(member)
+                        .roomInfo(roomInfo)
+                        .build();
+
+                roomInfo.getRoomDetail().add(roomDetail);
                 roomInfoRepository.save(roomInfo);
                 return RoomInfoResponseDto.Info(roomInfo);
         }
 
         @Transactional(readOnly = true)
+        public List<RoomInfoResponseDto> getRoomInfo(String memberId) {
+                Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow();
+                return getRoomInfo(member);
+        }
+
+        @Transactional(readOnly = true)
         public List<RoomInfoResponseDto> getRoomInfo(Member member) {
                 List<RoomInfo> allByOrderByModifiedAtDesc = roomInfoRepository.findAllByMemberOrderByModifiedAtDesc(member);
-
                 return allByOrderByModifiedAtDesc.stream()
                         .map(RoomInfoResponseDto::Info)
                         .collect(Collectors.toList());
@@ -65,6 +83,14 @@ public class RoomService {
                 if(!member.getMemberId().equals(roomInfo.getMember().getMemberId()))
                 throw new IllegalArgumentException("채팅방에 존재하지 않는 유저입니다.");
                 roomInfoRepository.delete(roomInfo);
+        }
+
+
+        public void inviteRoom(Long memberId, Long roomId, RoomInviteDto requestDto) {
+
+                Member member = memberRepository.findById(memberId).orElseThrow();
+
+                inviteRoom(member, roomId, requestDto);
         }
 
         public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {

@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll();
+                .antMatchers("/chat/**").permitAll();
         http.csrf().disable()
                 /* jwt 필터 설정 */
                 .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
