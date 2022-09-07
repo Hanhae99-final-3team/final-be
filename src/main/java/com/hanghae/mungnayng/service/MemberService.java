@@ -28,7 +28,7 @@ public class MemberService {
     public void signUp(SignupRequestDto signupRequestDto) {
         checkEmailIsDuplicate(signupRequestDto.getEmail());
         String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
-        Member newMember = Member.of(signupRequestDto.getEmail(), signupRequestDto.getNickname(), encodedPassword);
+        Member newMember = new Member(signupRequestDto.getEmail(), signupRequestDto.getNickname(), encodedPassword);
         memberRepository.save(newMember);
     }
 
