@@ -4,6 +4,7 @@ import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ChartResponseDto;
+import com.hanghae.mungnayng.domain.item.dto.ItemMainResponseDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
@@ -66,57 +67,57 @@ public class ItemService {
         return buildItemResponseDto(userDetails, item);
     }
 
-    /* 전체 상품 조회 */
+    /* 전체 상품 조회(MainPage) */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getAllItem(UserDetails userDetails, Pageable pageable) {
+    public List<ItemMainResponseDto> getAllItem(Pageable pageable) {
         Page<Item> itemList = itemRepository.findAll(pageable);
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
-            itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails, item)
+            itemMainResponseDtoList.add(
+                    buildItemMainResponseDto(item)
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(이중 카테고리) */
+    /* 카테고리에 따른 상품 조회(MainPage/이중 카테고리) */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getItemByTwoCategory(UserDetails userDetails, String petCategory, String itemCategory, Pageable pageable) {
+    public List<ItemMainResponseDto> getItemByTwoCategory(String petCategory, String itemCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory, pageable);
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
-            itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails, item)
+            itemMainResponseDtoList.add(
+                    buildItemMainResponseDto(item)
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(단일 카테고리 - petCategory) */
-    public List<ItemResponseDto> getItemByPetCategory(UserDetails userDetails, String petCategory, Pageable pageable) {
+    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
+    public List<ItemMainResponseDto> getItemByPetCategory(String petCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory, pageable);
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
-            itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails, item)
+            itemMainResponseDtoList.add(
+                    buildItemMainResponseDto(item)
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory) */
-    public List<ItemResponseDto> getItemByItemCategory(UserDetails userDetails, String itemCategory, Pageable pageable) {
+    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
+    public List<ItemMainResponseDto> getItemByItemCategory(String itemCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory, pageable);
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
-            itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails, item)
+            itemMainResponseDtoList.add(
+                    buildItemMainResponseDto(item)
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
-    /* 단일 상품 조회 - detail */
+    /* 단일 상품 조회(DetailPage) */
     @Transactional(readOnly = true)
     public ItemResponseDto getItem(UserDetails userDetails, Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(
@@ -128,8 +129,8 @@ public class ItemService {
 
     /* 조회수 증가(단일 상품 조회 시) */
     @Transactional
-    public int addViewCnt(Long itemId) {
-        return itemRepository.addViewCnt(itemId);
+    public void addViewCnt(Long itemId) {
+        itemRepository.addViewCnt(itemId);
     }
 
 
@@ -175,21 +176,21 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    /* 내가 등록한 상품 조회 */
+    /* 내가 등록한 상품 조회(MyPage) */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
+    public List<ItemMainResponseDto> getMyItem(UserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
         }
         List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
 
         for (Item item : itemList) {
-            itemResponseDtoList.add(
-                    buildItemResponseDto(userDetails, item)
+            itemMainResponseDtoList.add(
+                    buildItemMainResponseDto(item)
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
     /* 마이페이지 차트 호출 */
@@ -238,7 +239,7 @@ public class ItemService {
         return chartResponseDtoList;
     }
 
-    /* 공통 작업 - ResponseDto build */
+    /* Detail 페이지용 ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         int commentCnt = commentRepository.countByItem_Id(item.getId());
@@ -279,6 +280,32 @@ public class ItemService {
                 .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
+                .build();
+    }
+
+    /* 공통작업 - Main 페이지용 ResponseDto build */
+    private ItemMainResponseDto buildItemMainResponseDto(Item item) {
+
+        /* 해당 item의 이미지 호출 */
+        List<Image> imageList = imageRepository.findAllByItemId(item.getId());
+        List<String> imgUrlList = new ArrayList<>();
+        for (Image image : imageList) {
+            System.out.println();
+            imgUrlList.add(image.getImgUrl());
+        }
+
+        return ItemMainResponseDto.builder()
+                .id(item.getId())
+                .title(item.getTitle())
+                .petCategory(item.getPetCategory())
+                .itemCategory(item.getItemCategory())
+                .itemImgs(imgUrlList)
+                .location(item.getLocation())
+                .zzimCnt(item.getZzimCnt())
+                .viewCnt(item.getViewCnt())
+                .sellingPrice(item.getSellingPrice())
+                .IsComplete(item.isComplete())
                 .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                 .build();
     }
