@@ -1,6 +1,6 @@
 package com.hanghae.mungnayng.config;
 
-import com.hanghae.mungnayng.config.handler.ChatHandler;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -8,15 +8,15 @@ import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableWebSocketMessageBroker
+@EnableWebSocketMessageBroker/*stomp적용*/
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final ChatHandler chatHandler;
+//    private final ChatHandler chatHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/stomp/chat")
-                .setAllowedOrigins("http://localhost:8080")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 

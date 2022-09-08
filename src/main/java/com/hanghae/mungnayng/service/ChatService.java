@@ -35,14 +35,14 @@ public class ChatService {
     }
 
 
-    /*읽지 않은 최근 채팅 저장하기*/
-//    public List<ChatDto> getChat(Long roomId) {
-//        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_InOrderByCreatedAtAsc(roomId);
-//
-//        return chats.stream()
-//                .map(ChatDto::new)
-//                .collect(Collectors.toList());
-//
-//    }
+    /*채팅 보내기*/
+    public List<ChatDto> getChat(Long roomId) {
+        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtAsc(roomId);
+
+        return chats.stream()
+                .map(ChatDto::new)
+                .collect(Collectors.toList());
+
+    }
 
 }

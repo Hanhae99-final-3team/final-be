@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.domain.Room;
 
 import com.hanghae.mungnayng.domain.Timestamped;
+import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
