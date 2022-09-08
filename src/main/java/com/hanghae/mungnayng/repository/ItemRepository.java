@@ -13,6 +13,16 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Page<Item> findAll(Pageable pageable);
 
+    /* 상품 리스트 호출 시 LastData(마지막 게시글)인지 확인 */
+    @Query("select min(i.id) from Item i")   /* 전체 상품 조회 */
+    int lastData();
+    @Query("select min(i.id) from Item i where i.petCategory = :petCategory")    /* 펫 카테고리 */
+    int lastDataPetCategory(String petCategory);
+    @Query("select min(i.id) from Item i where i.itemCategory = :itemCategory")    /* 아이템 카테고리 */
+    int lastDataItemCategory(String itemCategory);
+    @Query("select min(i.id) from Item i where i.petCategory = :petCategory and i.itemCategory = :itemCategory")
+    int lastDataTwoCategory(String petCategory, String itemCategory);   /* 이중 카테고리 */
+
     /* 상품 단일 조회 시 viewCnt + 1 */
     @Modifying
     @Query("update Item i set i.viewCnt = i.viewCnt + 1 where i.id = :id")
