@@ -14,10 +14,10 @@ public interface SearchRepository extends JpaRepository<ItemSearch, Long> {
                     "where i.nickname = :nickname order by i.id DESC LIMIT 8")
     List<String> getAllByNickname(String nickname);
 
-    /* 인기 검색어 조회 - 가장 빈번하게 검색된 검색어 20개 조회 */
+    /* 인기 검색어 조회 - 가장 빈번하게 검색된 검색어 5개 조회 */
     @Query(nativeQuery = true, value =
             "select search_word from item_search " +
-                    "Group By search_word ORDER BY COUNT(search_word) DESC LIMIT 20")
+                    "Group By search_word ORDER BY COUNT(search_word) DESC LIMIT 5")
     List<String> getAllByPopularity();
 
     /* 최근 검색어 전체 조회 */

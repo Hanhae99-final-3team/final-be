@@ -3,9 +3,8 @@ package com.hanghae.mungnayng.service;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
-import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
+import com.hanghae.mungnayng.domain.item.dto.ItemMainResponseDto;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
-import com.hanghae.mungnayng.repository.CommentRepository;
 import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
@@ -14,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +24,6 @@ public class ZzimService {
     private final ItemRepository itemRepository;
     private final ZzimRepository zzimRepository;
     private final ImageRepository imageRepository;
-    private final CommentRepository commentRepository;
 
     /* 찜 하기 */
     @Transactional
@@ -35,8 +31,8 @@ public class ZzimService {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
-        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId,nickname);
+        String nickname = ((UserDetailsImpl) userDetails).getMember().getNickname();
+        Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, nickname);
         if (optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
@@ -55,7 +51,7 @@ public class ZzimService {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
+        String nickname = ((UserDetailsImpl) userDetails).getMember().getNickname();
         Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, nickname);
         if (!optionalZzim.isPresent()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
@@ -67,15 +63,14 @@ public class ZzimService {
 
     /* 내가 찜한 상품 가져오기 */
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getZzimItem(UserDetails userDetails) {
-        if (userDetails == null){
+    public List<ItemMainResponseDto> getZzimItem(UserDetails userDetails) {
+        if (userDetails == null) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
-        String nickname = ((UserDetailsImpl)userDetails).getMember().getNickname();
 
-        List<Item> itemList = itemRepository.getAllItemListByZzimedId(nickname);
-        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
-        
+        List<Item> itemList = itemRepository.getAllItemListByZzimedId(userDetails.getUsername());
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+
         for (Item item : itemList) {
             // 해당 item의 이미지 호출
             List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -85,39 +80,28 @@ public class ZzimService {
                 imgUrlList.add(image.getImgUrl());
             }
 
-            int commentCnt = commentRepository.countByItem_Id(item.getId());
-            
-            itemResponseDtoList.add(
-                    ItemResponseDto.builder()
+            itemMainResponseDtoList.add(
+                    ItemMainResponseDto.builder()
                             .id(item.getId())
-                            .IsMine(item.getNickname().equals(nickname))
-                            .nickname(item.getNickname())
                             .title(item.getTitle())
-                            .content(item.getContent())
                             .petCategory(item.getPetCategory())
                             .itemCategory(item.getItemCategory())
                             .itemImgs(imgUrlList)
                             .location(item.getLocation())
-                            .commentCnt(commentCnt)
                             .zzimCnt(item.getZzimCnt())
                             .viewCnt(item.getViewCnt())
-                            .purchasePrice(item.getPurchasePrice())
                             .sellingPrice(item.getSellingPrice())
-                            .IsComplete(item.isComplete())
-                            .IsZzimed(true)    /* 내가 찜한 상품 조회이니 당연 isZzimed는 항상 true */
-                            .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-                            .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                             .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                             .build()
             );
         }
-        return itemResponseDtoList;
+        return itemMainResponseDtoList;
     }
 
     /* 거래 완료 버튼 */
     @Transactional
     public Boolean purchaseComplete(Long itemId, UserDetails userDetails) {
-        if(userDetails == null){
+        if (userDetails == null) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
         Item item = itemRepository.findById(itemId).orElseThrow(

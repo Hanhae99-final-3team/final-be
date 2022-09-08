@@ -32,40 +32,38 @@ public class ItemController {
         return ResponseEntity.ok().body(itemResponseDto);
     }
 
-    /* 전체 상품 조회 */
+    /* 전체 상품 조회(MainPage) */
     @ApiOperation(value = "전체 상품 조회 메소드")
     @GetMapping("items")
-    public ResponseEntity<?> getAllItem(@AuthenticationPrincipal UserDetails userDetails,
-                                        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getAllItem(userDetails, pageable));
+    public ResponseEntity<?> getAllItem(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getAllItem(pageable));
     }
 
-    /* 카테고리에 따른 상품 조회(단일 카테고리 - petCategory) */
+    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
     @ApiOperation(value = "pet_category에 따른 상품 조회 메소드")
     @GetMapping("items/petcategory")
-    public ResponseEntity<?> getItemByPetCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("petCategory") String petCategory,
+    public ResponseEntity<?> getItemByPetCategory(@RequestParam("petCategory") String petCategory,
                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByPetCategory(userDetails, petCategory, pageable));
+        return ResponseEntity.ok().body(itemService.getItemByPetCategory(petCategory, pageable));
     }
 
-    /* 카테고리에 따른 상품 조회(단일 카테고리 - itemCategory) */
+    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
     @ApiOperation(value = "item_category에 따른 상품 조회 메소드")
     @GetMapping("items/itemcategory")
-    public ResponseEntity<?> getItemByItemCategory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("itemCategory") String itemCategory,
+    public ResponseEntity<?> getItemByItemCategory(@RequestParam("itemCategory") String itemCategory,
                                                    @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByItemCategory(userDetails, itemCategory, pageable));
+        return ResponseEntity.ok().body(itemService.getItemByItemCategory(itemCategory, pageable));
     }
 
-    /* 카테고리에 따른 상품 조회(이중 카테고리) */
+    /* 카테고리에 따른 상품 조회(MainPage/이중 카테고리) */
     @ApiOperation(value = "카테고리를 2중(pet_category + item_category)으로 반영한 상품 조회 메소드")
     @GetMapping("items/twocategory")
-    public ResponseEntity<?> getItemByTwoCategory(@AuthenticationPrincipal UserDetails userDetails,
-                                                  @RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory,
+    public ResponseEntity<?> getItemByTwoCategory(@RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory,
                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC)Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(userDetails, petCategory, itemCategory, pageable));
+        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(petCategory, itemCategory, pageable));
     }
 
-    /* 단일 상품 조회 - detail */
+    /* 단일 상품 조회(DetailPage) */
     @ApiOperation(value = "단일 상품 조회 메소드")
     @GetMapping("items/detail/{itemId}")
     public ResponseEntity<?> getItem(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long itemId) {
@@ -90,7 +88,7 @@ public class ItemController {
         return ResponseEntity.ok().body(Map.of("msg", "게시글이 삭제되었습니다.", "success", true));
     }
 
-    /* 내가 등록한 상품 조회 */
+    /* 내가 등록한 상품 조회(MyPage) */
     @ApiOperation(value = "내가 등록한 상품 조회 메소드")
     @GetMapping("items/mypage")
     public ResponseEntity<?> getMyItem(@AuthenticationPrincipal UserDetails userDetails){
