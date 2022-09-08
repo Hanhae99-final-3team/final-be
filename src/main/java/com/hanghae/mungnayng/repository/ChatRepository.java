@@ -8,8 +8,7 @@ import java.util.List;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 
-//    List<Chat>findByRoomDetail_RoomInfo_InOrderByCreatedAtAsc(Long roomInfoId);
+    List<Chat>findByRoomDetail_RoomInfo_IdOrderByCreatedAtAsc(Long roomInfoId);
 
-//    List<Chat>findByRoomDetail_RoomInfo_InOrderByCreatedAtAsc(Long memberId);
 
 }
