@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -249,6 +251,27 @@ public class ItemService {
                         .build()
         );
         return chartResponseDtoList;
+    }
+
+    /* 마이페이지 - 내가 조회한 상품 리스트 호출 */
+    public List<ItemMainResponseDto> getItemList(HttpServletRequest httpServletRequest){
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+        int lastData = 0;   /* lastData가 필요없는 메소드이기에 임시값 부여 */
+
+        Cookie[] cookieList = httpServletRequest.getCookies();
+        if (cookieList != null) {
+            for (Cookie cookie : cookieList) {
+                if (cookie.getName().startsWith("itemId")) {
+                    Item item = itemRepository.findById(Long.parseLong(cookie.getValue())).orElseThrow(
+                            ()-> new IllegalArgumentException("유효하지 않은 요청입니다.")
+                    );
+                    itemMainResponseDtoList.add(
+                      buildItemMainResponseDto(lastData, item)
+                    );
+                }
+            }
+        }
+        return itemMainResponseDtoList;
     }
 
     /* Detail 페이지용 ResponseDto build */
