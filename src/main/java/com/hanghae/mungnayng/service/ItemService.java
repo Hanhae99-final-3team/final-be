@@ -242,6 +242,7 @@ public class ItemService {
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         int commentCnt = commentRepository.countByItem_Id(item.getId());
+        Long averagePrice = itemRepository.getAveragePrice(item.getItemCategory());    /* 해당 item이 속한 itemCategory 상품의 평균가격 도출 */
 
         /* 해당 item의 이미지 호출 */
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -273,6 +274,7 @@ public class ItemService {
                 .viewCnt(item.getViewCnt())
                 .purchasePrice(item.getPurchasePrice())
                 .sellingPrice(item.getSellingPrice())
+                .averagePrice(averagePrice)
                 .IsComplete(item.isComplete())
                 .IsZzimed(isZzimed)
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))

@@ -27,6 +27,7 @@ public class ItemResponseDto {
     private int viewCnt;
     private Long purchasePrice;
     private Long sellingPrice;
+    private Long averagePrice;
     private String createdAt;
     private String modifiedAt;
     private String time;

@@ -33,10 +33,18 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where i.itemCategory = :itemCategory ")
     Page<Item> getAllItemListByItemCategory(String itemCategory, Pageable pageable);
 
-    /* 상품 기본 검색 - 최신순 정렬('item - title / content'를 바탕으로) */
+//    /* 상품 기본 검색 - 최신순 정렬('item - title / content'를 바탕으로) */
     @Query("select i from Item i " +
             "where i.title like %:keyword% or i.content like %:keyword% " +
             "order by i.createdAt desc ")
+//    @Query(nativeQuery = true, value =
+//            "select * from item i " +
+//                    "where INSTR(i.title, :keyword) > 0 or INSTR(i.content, :keyword) > 0 " +
+//                    "order by i.id desc ")
+//    @Query(nativeQuery = true, value =
+//            "select * from item i " +
+//                    "where i.title IN :keyword or i.content IN :keyword " +
+//                    "order by i.created_at desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
 
     /* 상품 기본 검색 - 인기순 정렬 */
@@ -76,4 +84,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "select sum(selling_price) from item i inner join zzim z " +
                     "on z.item_id = i.id where z.zzimed_by = :nickname")
     int getThirdItemsPriceSum(String nickname);
+
+    /* itemCategory 등록상품의 평균 가격 호출 */
+    @Query("select avg(i.sellingPrice) from Item i " +
+            "where i.itemCategory = :itemCategory ")
+    Long getAveragePrice(String itemCategory);
 }

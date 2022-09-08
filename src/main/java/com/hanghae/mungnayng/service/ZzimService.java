@@ -86,7 +86,8 @@ public class ZzimService {
             }
 
             int commentCnt = commentRepository.countByItem_Id(item.getId());
-            
+            Long averagePrice = itemRepository.getAveragePrice(item.getItemCategory());    /* 해당 item이 속한 itemCategory 상품의 평균가격 도출 */
+
             itemResponseDtoList.add(
                     ItemResponseDto.builder()
                             .id(item.getId())
@@ -103,6 +104,7 @@ public class ZzimService {
                             .viewCnt(item.getViewCnt())
                             .purchasePrice(item.getPurchasePrice())
                             .sellingPrice(item.getSellingPrice())
+                            .averagePrice(averagePrice)
                             .IsComplete(item.isComplete())
                             .IsZzimed(true)    /* 내가 찜한 상품 조회이니 당연 isZzimed는 항상 true */
                             .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
