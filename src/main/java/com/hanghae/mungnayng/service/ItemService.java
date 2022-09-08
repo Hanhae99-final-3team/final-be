@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -72,9 +74,12 @@ public class ItemService {
     public List<ItemMainResponseDto> getAllItem(Pageable pageable) {
         Page<Item> itemList = itemRepository.findAll(pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+
+        int lastData = itemRepository.lastData();   /* FE 무한스크롤 위한 마지막 게시글 확인 */
+
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(item)
+                    buildItemMainResponseDto(lastData,item)
             );
         }
         return itemMainResponseDtoList;
@@ -85,9 +90,12 @@ public class ItemService {
     public List<ItemMainResponseDto> getItemByTwoCategory(String petCategory, String itemCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+
+        int lastData = itemRepository.lastDataTwoCategory(petCategory, itemCategory);   /* FE 무한스크롤 위한 마지막 게시글 확인 */
+
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(item)
+                    buildItemMainResponseDto(lastData, item)
             );
         }
         return itemMainResponseDtoList;
@@ -97,9 +105,12 @@ public class ItemService {
     public List<ItemMainResponseDto> getItemByPetCategory(String petCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+
+        int lastData = itemRepository.lastDataPetCategory(petCategory); /* FE 무한스크롤 위한 마지막 게시글 확인 */
+
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(item)
+                    buildItemMainResponseDto(lastData, item)
             );
         }
         return itemMainResponseDtoList;
@@ -109,9 +120,12 @@ public class ItemService {
     public List<ItemMainResponseDto> getItemByItemCategory(String itemCategory, Pageable pageable) {
         Page<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+
+        int lastData = itemRepository.lastDataItemCategory(itemCategory); /* FE 무한스크롤 위한 마지막 게시글 확인 */
+
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(item)
+                    buildItemMainResponseDto(lastData, item)
             );
         }
         return itemMainResponseDtoList;
@@ -178,19 +192,19 @@ public class ItemService {
 
     /* 내가 등록한 상품 조회(MyPage) */
     @Transactional(readOnly = true)
-    public List<ItemMainResponseDto> getMyItem(UserDetails userDetails) {
+    public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
         if (userDetails == null) {
             throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
         }
         List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
-        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+        List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
 
         for (Item item : itemList) {
-            itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(item)
+            itemResponseDtoList.add(
+                    buildItemResponseDto(userDetails, item)
             );
         }
-        return itemMainResponseDtoList;
+        return itemResponseDtoList;
     }
 
     /* 마이페이지 차트 호출 */
@@ -239,6 +253,27 @@ public class ItemService {
         return chartResponseDtoList;
     }
 
+    /* 마이페이지 - 내가 조회한 상품 리스트 호출 */
+    public List<ItemMainResponseDto> getItemList(HttpServletRequest httpServletRequest){
+        List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
+        int lastData = 0;   /* lastData가 필요없는 메소드이기에 임시값 부여 */
+
+        Cookie[] cookieList = httpServletRequest.getCookies();
+        if (cookieList != null) {
+            for (Cookie cookie : cookieList) {
+                if (cookie.getName().startsWith("itemId")) {
+                    Item item = itemRepository.findById(Long.parseLong(cookie.getValue())).orElseThrow(
+                            ()-> new IllegalArgumentException("유효하지 않은 요청입니다.")
+                    );
+                    itemMainResponseDtoList.add(
+                      buildItemMainResponseDto(lastData, item)
+                    );
+                }
+            }
+        }
+        return itemMainResponseDtoList;
+    }
+
     /* Detail 페이지용 ResponseDto build */
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
@@ -285,7 +320,11 @@ public class ItemService {
     }
 
     /* 공통작업 - Main 페이지용 ResponseDto build */
-    private ItemMainResponseDto buildItemMainResponseDto(Item item) {
+    private ItemMainResponseDto buildItemMainResponseDto(int lastData, Item item) {
+        boolean isLastData = false;
+        if(item.getId() == lastData){
+            isLastData = true;
+        }
 
         /* 해당 item의 이미지 호출 */
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -307,6 +346,7 @@ public class ItemService {
                 .sellingPrice(item.getSellingPrice())
                 .IsComplete(item.isComplete())
                 .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
+                .lastData(isLastData)
                 .build();
     }
 }

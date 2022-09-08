@@ -24,4 +24,5 @@ public class ItemMainResponseDto {
     private Long sellingPrice;
     private String time;
     private boolean IsComplete;
+    private boolean lastData;
 }
