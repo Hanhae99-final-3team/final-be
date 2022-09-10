@@ -7,11 +7,9 @@ import com.hanghae.mungnayng.domain.item.dto.ChartResponseDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemMainResponseDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
+import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
-import com.hanghae.mungnayng.repository.CommentRepository;
-import com.hanghae.mungnayng.repository.ImageRepository;
-import com.hanghae.mungnayng.repository.ItemRepository;
-import com.hanghae.mungnayng.repository.ZzimRepository;
+import com.hanghae.mungnayng.repository.*;
 import com.hanghae.mungnayng.util.TimeUtil;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +34,9 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final S3uploader s3uploader;
     private final ImageRepository imageRepository;
-
     private final CommentRepository commentRepository;
     private final ZzimRepository zzimRepository;
+    private final MemberRepository memberRepository;
 
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
@@ -295,6 +293,8 @@ public class ItemService {
             if (zzim.isPresent()) isZzimed = true;
         }
 
+        Member member = memberRepository.findByNickname(item.getNickname());     /* 상품 게시자 정보 가져오기 */
+
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .IsMine(userDetails != null && item.getNickname().equals(userDetails.getUsername()))
@@ -313,6 +313,7 @@ public class ItemService {
                 .averagePrice(averagePrice)
                 .IsComplete(item.isComplete())
                 .IsZzimed(isZzimed)
+                .memberId(member.getMemberId())    /* 상품 게시자의 memberId */
                 .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))

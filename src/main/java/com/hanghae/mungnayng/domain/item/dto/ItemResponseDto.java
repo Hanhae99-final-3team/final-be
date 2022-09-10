@@ -33,4 +33,5 @@ public class ItemResponseDto {
     private String time;
     private boolean IsComplete;
     private boolean IsZzimed;
+    private Long memberId;
 }
