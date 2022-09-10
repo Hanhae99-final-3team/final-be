@@ -115,7 +115,7 @@ public class ItemController {
     /* 마이페이지 - 내가 조회한 상품 */
     @ApiOperation(value = "마이페이지 - 내가 조회한 상품 호출 메소드")
     @GetMapping("items/mypage/list")
-    public ResponseEntity<?> getItemList(HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(itemService.getItemList(httpServletRequest));
+    public ResponseEntity<?> getItemList(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest httpServletRequest) {
+        return ResponseEntity.ok().body(itemService.getItemList(userDetails, httpServletRequest));
     }
 }

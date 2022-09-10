@@ -11,6 +11,7 @@ import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.zzim.Zzim;
 import com.hanghae.mungnayng.repository.*;
 import com.hanghae.mungnayng.util.TimeUtil;
+import com.hanghae.mungnayng.util.Validator;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,11 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +36,12 @@ public class ItemService {
     private final CommentRepository commentRepository;
     private final ZzimRepository zzimRepository;
     private final MemberRepository memberRepository;
+    private final Validator validator;
 
     /* 상품 등록 */
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
+        validator.validateCreateItemInput(userDetails, itemRequestDto);    /* 상품 등록 메소드 유효성 검사 메소드화 */
+
         Item item = Item.builder()
                 .title(itemRequestDto.getTitle())
                 .content(itemRequestDto.getContent())
@@ -77,7 +79,7 @@ public class ItemService {
 
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
-                    buildItemMainResponseDto(lastData,item)
+                    buildItemMainResponseDto(lastData, item)
             );
         }
         return itemMainResponseDtoList;
@@ -86,6 +88,9 @@ public class ItemService {
     /* 카테고리에 따른 상품 조회(MainPage/이중 카테고리) */
     @Transactional(readOnly = true)
     public List<ItemMainResponseDto> getItemByTwoCategory(String petCategory, String itemCategory, Pageable pageable) {
+        validator.validateItemCategory(itemCategory);    /* 상품 카테고리 유효성 검사 */
+        validator.validatePetCategory(petCategory);    /* 펫 카테고리 유효성 검사 */
+
         Page<Item> itemList = itemRepository.getAllItemListByTwoCategory(petCategory, itemCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
 
@@ -101,6 +106,8 @@ public class ItemService {
 
     /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
     public List<ItemMainResponseDto> getItemByPetCategory(String petCategory, Pageable pageable) {
+        validator.validatePetCategory(petCategory);    /* 펫 카테고리 유효성 검사 */
+
         Page<Item> itemList = itemRepository.getAllItemListByPetCategry(petCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
 
@@ -116,6 +123,8 @@ public class ItemService {
 
     /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
     public List<ItemMainResponseDto> getItemByItemCategory(String itemCategory, Pageable pageable) {
+        validator.validateItemCategory(itemCategory);    /* 상품 카테고리 유효성 검사 */
+
         Page<Item> itemList = itemRepository.getAllItemListByItemCategory(itemCategory, pageable);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
 
@@ -132,9 +141,7 @@ public class ItemService {
     /* 단일 상품 조회(DetailPage) */
     @Transactional(readOnly = true)
     public ItemResponseDto getItem(UserDetails userDetails, Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("조회하시려는 상품이 존재하지 않습니다.")
-        );
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
 
         return buildItemResponseDto(userDetails, item);
     }
@@ -145,16 +152,12 @@ public class ItemService {
         itemRepository.addViewCnt(itemId);
     }
 
-
     /* 상품 수정 - detail */
     @Transactional
     public ItemResponseDto updateItem(UserDetails userDetails, Long itemId, ItemRequestDto itemRequestDto) throws IOException {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("조회하시려는 상품이 존재하지 않습니다.")
-        );
-        if (!item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname())) {
-            throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
+        validator.validateEqualUser(userDetails, item);    /* 작성자와 조회자 일치 여부 유효성 검사 */
 
         item.update(itemRequestDto);
 
@@ -179,21 +182,18 @@ public class ItemService {
     /* 상품 삭제 - detail */
     @Transactional
     public void deleteItem(UserDetails userDetails, Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("조회하시려는 상품이 존재하지 않습니다.")
-        );
-        if (!item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname())) {
-            throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
+        validator.validateEqualUser(userDetails, item);    /* 작성자와 조회자 일치 여부 유효성 검사 */
+
         itemRepository.delete(item);
     }
 
     /* 내가 등록한 상품 조회(MyPage) */
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
         List<Item> itemList = itemRepository.getAllItemByNickname(userDetails.getUsername());
         List<ItemResponseDto> itemResponseDtoList = new ArrayList<>();
 
@@ -208,9 +208,8 @@ public class ItemService {
     /* 마이페이지 차트 호출 */
     @Transactional(readOnly = true)
     public List<ChartResponseDto> getMyChart(UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
         List<ChartResponseDto> chartResponseDtoList = new ArrayList<>();
 
         int sumMyItemsPrice = 0;    /* 자기 등록 상품 가격 총합 */
@@ -252,7 +251,9 @@ public class ItemService {
     }
 
     /* 마이페이지 - 내가 조회한 상품 리스트 호출 */
-    public List<ItemMainResponseDto> getItemList(HttpServletRequest httpServletRequest){
+    public List<ItemMainResponseDto> getItemList(UserDetails userDetails, HttpServletRequest httpServletRequest) {
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         int lastData = 0;   /* lastData가 필요없는 메소드이기에 임시값 부여 */
 
@@ -261,10 +262,10 @@ public class ItemService {
             for (Cookie cookie : cookieList) {
                 if (cookie.getName().startsWith("itemId")) {
                     Item item = itemRepository.findById(Long.parseLong(cookie.getValue())).orElseThrow(
-                            ()-> new IllegalArgumentException("유효하지 않은 요청입니다.")
+                            () -> new IllegalArgumentException("유효하지 않은 요청입니다.")
                     );
                     itemMainResponseDtoList.add(
-                      buildItemMainResponseDto(lastData, item)
+                            buildItemMainResponseDto(lastData, item)
                     );
                 }
             }
@@ -314,8 +315,6 @@ public class ItemService {
                 .IsComplete(item.isComplete())
                 .IsZzimed(isZzimed)
                 .memberId(member.getMemberId())    /* 상품 게시자의 memberId */
-                .createdAt(item.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-                .modifiedAt(item.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                 .build();
     }
@@ -323,7 +322,7 @@ public class ItemService {
     /* 공통작업 - Main 페이지용 ResponseDto build */
     private ItemMainResponseDto buildItemMainResponseDto(int lastData, Item item) {
         boolean isLastData = false;
-        if(item.getId() == lastData){
+        if (item.getId() == lastData) {
             isLastData = true;
         }
 
@@ -351,4 +350,3 @@ public class ItemService {
                 .build();
     }
 }
-

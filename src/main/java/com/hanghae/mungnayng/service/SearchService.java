@@ -7,11 +7,11 @@ import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponsedto;
 import com.hanghae.mungnayng.repository.*;
 import com.hanghae.mungnayng.util.TimeUtil;
+import com.hanghae.mungnayng.util.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +22,7 @@ public class SearchService {
     private final ItemRepository itemRepository;
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
+    private final Validator validator;
 
     /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
     @Transactional
@@ -105,7 +106,7 @@ public class SearchService {
     public List<ItemSearchResponsedto> getSearchWord(UserDetails userDetails) {
         List<ItemSearchResponsedto> itemSearchResponsedtoList = new ArrayList<>();
 
-        if (userDetails==null) {    /* 비로그인 시 빈 배열 출력 */
+        if (userDetails == null) {    /* 비로그인 시 빈 배열 출력 */
             return itemSearchResponsedtoList;
         }
 
@@ -123,18 +124,16 @@ public class SearchService {
 
     /* 최근 검색어 개별 삭제*/
     public void deleteSearchWord(UserDetails userDetails, String searchWord){
-        if (userDetails == null) {
-            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
         List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNicknameAndSearchWord(userDetails.getUsername(),searchWord);
         searchRepository.deleteAll(itemSearchList);
     }
 
     /* 최근 검색어 전체 삭제 */
     public void deleteAllSearchWord(UserDetails userDetails){
-        if (userDetails == null) {
-            throw new IllegalArgumentException("로그인이 필요한 서비스입니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
         List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNickname(userDetails.getUsername());
         searchRepository.deleteAll(itemSearchList);
     }
