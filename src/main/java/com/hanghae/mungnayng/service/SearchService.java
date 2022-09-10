@@ -26,7 +26,7 @@ public class SearchService {
     /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
     @Transactional
     public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String keyword) {
-        String nickname = "null";
+        String nickname = "nonMember";  /* 비회원으로 검색할 경우 nickname은 nonMember로 저장 */
         if (userDetails != null){
             nickname = (userDetails.getUsername());
         }
