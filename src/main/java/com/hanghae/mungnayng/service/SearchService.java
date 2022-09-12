@@ -27,17 +27,19 @@ public class SearchService {
 
     /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
     @Transactional
-    public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String keyword) {
+    public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String toggle, String keyword) {
         String nickname = "nonMember";  /* 비회원으로 검색할 경우 nickname은 nonMember로 저장 */
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
         }
 
-        ItemSearch itemSearch = ItemSearch.builder()
-                .nickname(nickname)
-                .searchWord(keyword)
-                .build();
-        searchRepository.save(itemSearch);
+        if(toggle.equals("true")) {     /* 검색어 자동저장 토글 on(true)일 경우에만 검색어 저장*/
+            ItemSearch itemSearch = ItemSearch.builder()
+                    .nickname(nickname)
+                    .searchWord(keyword)
+                    .build();
+            searchRepository.save(itemSearch);
+        }
 
         /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
         List<Item> itemList = itemRepository.getAllItemListByTitleOrContent(keyword);
@@ -53,17 +55,19 @@ public class SearchService {
 
     /* 상품 기본 검색 - 인기순('item - title / content'를 바탕으로) */
     @Transactional
-    public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String keyword) {
+    public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String toggle, String keyword) {
         String nickname = "null";
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
         }
 
-        ItemSearch itemSearch = ItemSearch.builder()
-                .nickname(nickname)
-                .searchWord(keyword)
-                .build();
-        searchRepository.save(itemSearch);
+        if(toggle.equals("true")) {     /* 검색어 자동저장 토글 on(true)일 경우에만 검색어 저장*/
+            ItemSearch itemSearch = ItemSearch.builder()
+                    .nickname(nickname)
+                    .searchWord(keyword)
+                    .build();
+            searchRepository.save(itemSearch);
+        }
 
         /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
         List<Item> itemList = itemRepository.getAllItemListByOrderByPopularity(keyword);
