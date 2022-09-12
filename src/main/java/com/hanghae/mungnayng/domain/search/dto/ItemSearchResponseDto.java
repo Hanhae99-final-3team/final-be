@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class ItemSearchResponsedto {
+public class ItemSearchResponseDto {
 
     private String searchWord;
 

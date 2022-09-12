@@ -43,7 +43,7 @@ public class SearchController {
     /* 최근 검색어 개별 삭제 */
     @ApiOperation(value = "개별 검색 keyword 삭제 메소드")
     @DeleteMapping("items/search")
-    public ResponseEntity<?> deleteSerachWord(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("searchWord") String searchWord){
+    public ResponseEntity<?> deleteSerachWord(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("searchWord") String searchWord) {
         searchService.deleteSearchWord(userDetails, searchWord);
         return ResponseEntity.ok().body(Map.of("msg", "검색 키워드 삭제 완료", "success", true));
     }
@@ -51,7 +51,7 @@ public class SearchController {
     /* 최근 검색어 전체 삭제 */
     @ApiOperation(value = "본인이 최근 검색한 keyword 전체 삭제 메소드")
     @DeleteMapping("items/search/all")
-    public ResponseEntity<?> deleteAllSearchWord(@AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> deleteAllSearchWord(@AuthenticationPrincipal UserDetails userDetails) {
         searchService.deleteAllSearchWord(userDetails);
         return ResponseEntity.ok().body(Map.of("msg", "최근 검색어 전체 삭제 완료", "success", true));
     }
@@ -61,5 +61,12 @@ public class SearchController {
     @GetMapping("items/search/popularity")
     public ResponseEntity<?> getPopularSearchWord() {
         return ResponseEntity.ok().body(searchService.getPopularSearchWord());
+    }
+
+    /* 검색어 자동완성 */
+    @ApiOperation(value = "검색어 자동완성 메소드")
+    @GetMapping("items/search/auto")
+    public ResponseEntity<?> geKeywordAutomatically(@RequestParam("keyword") String keyword){
+        return ResponseEntity.ok(searchService.getKeywordAutomatically(keyword));
     }
 }
