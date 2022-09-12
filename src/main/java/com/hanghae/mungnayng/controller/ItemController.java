@@ -69,8 +69,7 @@ public class ItemController {
     /* 단일 상품 조회(DetailPage) */
     @ApiOperation(value = "단일 상품 조회 메소드")
     @GetMapping("items/detail/{itemId}")
-    public ResponseEntity<?> getItem(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long itemId,
-                                     HttpServletResponse httpServletResponse) {
+    public ResponseEntity<?> getItem(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long itemId) {
 
         ResponseCookie cookie = ResponseCookie.from("itemId" + itemId, Long.toString(itemId))    /* itemId로 신규 쿠키 생성(cookie name은 중복불가 */
                 .domain("localhost")
@@ -82,7 +81,6 @@ public class ItemController {
 
         ItemResponseDto itemResponseDto = itemService.getItem(userDetails, itemId);
         itemService.addViewCnt(itemId);
-
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(itemResponseDto);
     }
