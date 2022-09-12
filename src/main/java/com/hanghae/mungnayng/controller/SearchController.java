@@ -22,15 +22,17 @@ public class SearchController {
     /* 상품 기본 검색 - 최신순 정렬('item - title / content'를 바탕으로) */
     @ApiOperation(value = "keyword가 title 혹은 content에 포함되어있는 item을 찾는 검색 메소드 - 최신순 정렬")  /* 특정 경로의 Operation Http Method 설명 */
     @PostMapping("items/search")
-    public ResponseEntity<?> searchItem(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok().body(searchService.searchItem(userDetails, keyword));
+    public ResponseEntity<?> searchItem(@AuthenticationPrincipal UserDetails userDetails,
+                                        @RequestParam("toggle") String toggle, @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok().body(searchService.searchItem(userDetails, toggle, keyword));
     }
 
     /* 상품 기본 검색 - 인기순 정렬 */
     @ApiOperation(value = "keyword가 title 혹은 content에 포함되어있는 item을 찾는 검색 메소드 - 인기순 정렬")
     @PostMapping("items/search/popularity")
-    public ResponseEntity<?> searchItemOrderByPopularity(@AuthenticationPrincipal UserDetails userDetails, @RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok().body(searchService.searchItemOrderByPopularity(userDetails, keyword));
+    public ResponseEntity<?> searchItemOrderByPopularity(@AuthenticationPrincipal UserDetails userDetails,
+                                                         @RequestParam("toggle") String toggle, @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok().body(searchService.searchItemOrderByPopularity(userDetails, toggle, keyword));
     }
 
     /* 최근 검색어 */
