@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -74,20 +75,18 @@ public class ItemController {
                                      HttpServletResponse httpServletResponse) {
 
         ResponseCookie cookie = ResponseCookie.from("itemId" + itemId, Long.toString(itemId))    /* itemId로 신규 쿠키 생성(cookie name은 중복불가 */
-                .domain("43.200.1.214")
+                .domain("localhost")
                 .path("/")
                 .sameSite("None")
                 .maxAge(24 * 60 * 60)   /* 쿠키 만료 기한은 하루 */
                 .secure(true)
                 .build();
-        httpServletResponse.addHeader("Set-Cookie", cookie.toString());
-
 
         ItemResponseDto itemResponseDto = itemService.getItem(userDetails, itemId);
         itemService.addViewCnt(itemId);
 
 
-        return ResponseEntity.ok().body(itemResponseDto);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(itemResponseDto);
     }
 
     /* 상품 수정 - detail */
