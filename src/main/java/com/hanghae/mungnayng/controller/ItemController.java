@@ -79,7 +79,7 @@ public class ItemController {
 
         ItemResponseDto itemResponseDto = itemService.getItem(userDetails, itemId);
         itemService.addViewCnt(itemId);
-        return ResponseEntity.ok().body(itemResponseDto);
+        return ResponseEntity.ok().header(cookie.getName(), cookie.getValue()).body(itemResponseDto);
     }
 
     /* 상품 수정 - detail */
