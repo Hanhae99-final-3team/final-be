@@ -45,7 +45,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 //    /* 상품 기본 검색 - 최신순 정렬('item - title / content'를 바탕으로) */
     @Query("select i from Item i " +
-            "where i.title like %:keyword% or i.content like %:keyword% " +
+            "where i.title like %:keyword% or i.content like %:keyword% or " +
+            "i.itemCategory like %:keyword% or i.petCategory like %:keyword% " +
             "order by i.createdAt desc ")
 //    @Query(nativeQuery = true, value =
 //            "select * from item i " +
@@ -59,7 +60,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     /* 상품 기본 검색 - 인기순 정렬 */
     @Query("select i from Item i " +
-            "where i.title like %:keyword% or i.content like %:keyword% " +
+            "where i.title like %:keyword% or i.content like %:keyword% or " +
+            "i.itemCategory like %:keyword% or i.petCategory like %:keyword% " +
             "order by i.viewCnt desc ")
     List<Item> getAllItemListByOrderByPopularity(String keyword);
 

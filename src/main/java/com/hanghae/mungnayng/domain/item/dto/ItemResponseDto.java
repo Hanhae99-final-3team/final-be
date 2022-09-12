@@ -28,8 +28,6 @@ public class ItemResponseDto {
     private Long purchasePrice;
     private Long sellingPrice;
     private Long averagePrice;
-    private String createdAt;
-    private String modifiedAt;
     private String time;
     private boolean IsComplete;
     private boolean IsZzimed;

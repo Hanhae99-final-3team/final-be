@@ -9,6 +9,7 @@ import com.hanghae.mungnayng.repository.ImageRepository;
 import com.hanghae.mungnayng.repository.ItemRepository;
 import com.hanghae.mungnayng.repository.ZzimRepository;
 import com.hanghae.mungnayng.util.TimeUtil;
+import com.hanghae.mungnayng.util.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -24,49 +25,56 @@ public class ZzimService {
     private final ItemRepository itemRepository;
     private final ZzimRepository zzimRepository;
     private final ImageRepository imageRepository;
+    private final Validator validator;
 
     /* 찜 하기 */
     @Transactional
     public void itemZzim(Long itemId, UserDetails userDetails) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-        );
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
+
         String nickname = ((UserDetailsImpl) userDetails).getMember().getNickname();
         Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, nickname);
+
         if (optionalZzim.isPresent()) {
-            throw new IllegalArgumentException("유효하지 않은 요청입니다.");
+            throw new IllegalArgumentException("이미 찜한 상품입니다.");
         }
+
         Zzim zzim = Zzim.builder()
                 .item(item)
                 .zzimedBy(nickname)
                 .build();
         zzimRepository.save(zzim);
+
         int zzimCnt = zzimRepository.countAllByItemId(itemId);
+
         item.updateZzimCnt(zzimCnt);
     }
 
     /* 찜 취소 */
     @Transactional
     public void cancelZzim(Long itemId, UserDetails userDetails) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-        );
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
+
         String nickname = ((UserDetailsImpl) userDetails).getMember().getNickname();
         Optional<Zzim> optionalZzim = zzimRepository.findByItemIdAndZzimedBy(itemId, nickname);
-        if (!optionalZzim.isPresent()) {
+
+        if (optionalZzim.isEmpty()) {
             throw new IllegalArgumentException("유효하지 않은 요청입니다.");
         }
+
         zzimRepository.delete(optionalZzim.get());
+
         int zzimCnt = zzimRepository.countAllByItemId(itemId);
+
         item.updateZzimCnt(zzimCnt);
     }
 
     /* 내가 찜한 상품 가져오기 */
     @Transactional(readOnly = true)
     public List<ItemMainResponseDto> getZzimItem(UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new IllegalArgumentException("유효하지 않은 요청입니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
 
         List<Item> itemList = itemRepository.getAllItemListByZzimedId(userDetails.getUsername());
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
@@ -101,17 +109,11 @@ public class ZzimService {
     /* 거래 완료 버튼 */
     @Transactional
     public Boolean purchaseComplete(Long itemId, UserDetails userDetails) {
-        if (userDetails == null) {
-            throw new IllegalArgumentException("유효하지 않은 요청입니다.");
-        }
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-        );
-        if (!item.getNickname().equals(((UserDetailsImpl) userDetails).getMember().getNickname())) {
-            throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
-        }
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+        Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
+        validator.validateEqualUser(userDetails, item);    /* 작성자와 조회자 일치 여부 유효성 검사 */
 
-        if (item.isComplete() == false) {
+        if (!item.isComplete()) {
             item.updateIsComplete(true);
             return true;
         } else {

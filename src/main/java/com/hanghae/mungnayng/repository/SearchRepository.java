@@ -3,6 +3,7 @@ package com.hanghae.mungnayng.repository;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -30,4 +31,10 @@ public interface SearchRepository extends JpaRepository<ItemSearch, Long> {
             value = "select * from item_search i " +
                     "where i.nickname = :nickname and i.search_word = :searchWord")
     List<ItemSearch> getAllSearchWordByNicknameAndSearchWord(String nickname, String searchWord);
+
+    /* 검색어 자동완성 */
+    @Query("select distinct (i.searchWord) from ItemSearch i " +
+            "where i.searchWord like :keyword% " +
+            "group by i.searchWord order by count (i.searchWord) desc ")
+    List<String> getSearchwordByKeyword(String keyword);
 }
