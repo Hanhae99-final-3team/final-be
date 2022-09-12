@@ -17,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
@@ -72,7 +71,6 @@ public class ItemController {
     public ResponseEntity<?> getItem(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long itemId) {
 
         ResponseCookie cookie = ResponseCookie.from("itemId" + itemId, Long.toString(itemId))    /* itemId로 신규 쿠키 생성(cookie name은 중복불가 */
-                .domain("localhost")
                 .path("/")
                 .sameSite("None")
                 .maxAge(24 * 60 * 60)   /* 쿠키 만료 기한은 하루 */
