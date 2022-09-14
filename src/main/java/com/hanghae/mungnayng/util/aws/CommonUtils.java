@@ -11,9 +11,6 @@ public class CommonUtils {
         String fileName = originalFileName.substring(0, fileExtensionIndex); /* 파일 이름(.확장자를 제외한) */
         String now = String.valueOf(System.currentTimeMillis()); /* 파일 업로드 시간(String 타입으로 변환) */
 
-
         return fileName  + now + fileExtension;
     }
-
-
 }

@@ -31,7 +31,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -39,7 +39,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         /* origin */
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:3000",
+                "http://meongnyangmarket.s3-website.ap-northeast-2.amazonaws.com",
+                "https://d13psgq1alfu1t.cloudfront.net"));
         /* method */
         configuration.setAllowedMethods(Arrays.asList("*"));
         /* header */
@@ -49,6 +52,7 @@ public class SecurityConfig {
         /* header에 토큰 허용 */
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("RefreshToken");
+        configuration.addExposedHeader("Set-Cookie");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

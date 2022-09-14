@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
@@ -48,14 +47,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where i.title like %:keyword% or i.content like %:keyword% or " +
             "i.itemCategory like %:keyword% or i.petCategory like %:keyword% " +
             "order by i.createdAt desc ")
-//    @Query(nativeQuery = true, value =
-//            "select * from item i " +
-//                    "where INSTR(i.title, :keyword) > 0 or INSTR(i.content, :keyword) > 0 " +
-//                    "order by i.id desc ")
-//    @Query(nativeQuery = true, value =
-//            "select * from item i " +
-//                    "where i.title IN :keyword or i.content IN :keyword " +
-//                    "order by i.created_at desc ")
     List<Item> getAllItemListByTitleOrContent(String keyword);
 
     /* 상품 기본 검색 - 인기순 정렬 */
