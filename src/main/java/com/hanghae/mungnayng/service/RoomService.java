@@ -111,7 +111,8 @@ public class RoomService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
         if (!me.getNickname().equals(roomInfo.getNickname()))
             throw new IllegalArgumentException("권한이 없습니다.");
-
+        if(inviteDto.getMemberId().equals(roomInfo.getMember().getMemberId()))
+            throw new IllegalArgumentException("이전 채팅 내역이 존재합니다.");
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
         RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, inviteDto.getMemberId())
