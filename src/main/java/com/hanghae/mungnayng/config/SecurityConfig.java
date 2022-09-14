@@ -62,7 +62,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers().frameOptions().sameOrigin();
+        http.headers().frameOptions().sameOrigin().disable();
         http.cors();
         http.csrf().disable()
                 /* jwt 필터 설정 */

@@ -17,14 +17,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final RoomDetailRepository roomDetailRepository;
+    private final RoomDetailRepository roomDetailsRepository;
     private final ChatRepository chatRepository;
 
     @Transactional
     public ChatDto saveChat(Long roomId, ChatDto message) {
-        RoomDetail roomDetail = roomDetailRepository.findByRoomInfo_IdAndMember_MemberId(roomId, message.getMemberId())
+        RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, message.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 관한 정보가 없습니다."));
 
+        roomDetail.getRoomInfo().updateRecentChat(message.getContent());
+        log.info(roomDetail.getRoomInfo().getId().toString());
+        log.info(roomDetail.getRoomInfo().getRecentChat());
         Chat chat = Chat.builder()
                 .roomDetail(roomDetail)
                 .message(message.getContent())
@@ -37,7 +40,7 @@ public class ChatService {
 
     /*채팅 보내기*/
     public List<ChatDto> getChat(Long roomId) {
-        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtAsc(roomId);
+        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId);
 
         return chats.stream()
                 .map(ChatDto::new)

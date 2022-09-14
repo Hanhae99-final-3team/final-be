@@ -1,12 +1,12 @@
 package com.hanghae.mungnayng.service;
 
-
-import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoRequestDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
+import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.member.Member;
+import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.MemberRepository;
 import com.hanghae.mungnayng.repository.RoomDetailRepository;
 import com.hanghae.mungnayng.repository.RoomInfoRepository;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +24,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomInfoRepository roomInfoRepository;
-    private final RoomDetailRepository roomDetailRepository;
+    private final RoomDetailRepository roomDetailsRepository;
     private final MemberRepository memberRepository;
+
+    private final ChatRepository chatRepository;
+
 
     public RoomInfoResponseDto createRoom(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
@@ -49,6 +51,18 @@ public class RoomService {
         roomInfo.getRoomDetail().add(roomDetail);
         roomInfoRepository.save(roomInfo);
         return RoomInfoResponseDto.Info(roomInfo);
+    }
+
+
+    @Transactional
+    public void updateLastReadChat(Long roomId, Long memberId) {
+        RoomDetail detail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
+
+        Chat chat = chatRepository.findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
+
+        detail.updateChatId(chat.getId());
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +100,7 @@ public class RoomService {
         roomInfoRepository.delete(roomInfo);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void inviteRoom(Long memberId, Long roomId, RoomInviteDto inviteDto) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         inviteRoom(member, roomId, inviteDto);
@@ -100,9 +114,9 @@ public class RoomService {
 
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
-        RoomDetail roomDetail = roomDetailRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, inviteDto.getMemberId())
+        RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, inviteDto.getMemberId())
                 .orElse(new RoomDetail(roomInfo, member));
-        roomDetailRepository.save(roomDetail);
+        roomDetailsRepository.save(roomDetail);
 
     }
 }
