@@ -49,4 +49,11 @@ public class RoomDetail {
     public void updateChatId(Long chatId) {
         this.chatId = chatId;
     }
+
+    @Column
+    private Long chatId;
+
+    public void updateChatId(Long chatId) {
+        this.chatId = chatId;
+    }
 }

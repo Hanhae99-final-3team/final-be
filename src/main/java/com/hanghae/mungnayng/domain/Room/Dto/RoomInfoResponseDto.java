@@ -24,5 +24,4 @@ public class RoomInfoResponseDto  {
                 .createdAt(roomInfo.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
-
 }
