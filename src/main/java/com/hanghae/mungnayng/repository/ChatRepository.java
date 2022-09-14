@@ -13,11 +13,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     List<Chat>findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(Long roomInfoId);
     Optional<Chat> findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(Long roomInfoId);
 
-//    @Query(nativeQuery = true, value =
-//            "select item_id, member_id FROM chat c" +
-//            "left join room_detail rd on rd.id = c.room_detail_id" +
-//            "order by desc")
-//    List<Chat> findChatData(Long itemId, Long memberId);
+    List<Chat>findByRoomDetail_RoomInfo_IdOrderByCreatedAtAsc(Long roomInfoId);
 
 
 }

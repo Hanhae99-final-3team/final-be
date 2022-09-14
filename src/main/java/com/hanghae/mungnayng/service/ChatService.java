@@ -28,8 +28,6 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 관한 정보가 없습니다."));
 
         roomDetail.getRoomInfo().updateRecentChat(message.getContent());
-        log.info(roomDetail.getRoomInfo().getId().toString());
-        log.info(roomDetail.getRoomInfo().getRecentChat());
         Chat chat = Chat.builder()
                 .roomDetail(roomDetail)
                 .message(message.getContent())
