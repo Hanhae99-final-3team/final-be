@@ -39,5 +39,4 @@ public class S3uploader {
         imageUrl = URLDecoder.decode(imageUrl, "UTF-8");
         return imageUrl; /* URL 변환시 한글깨짐 방지용 decode */
     }
-
 }
