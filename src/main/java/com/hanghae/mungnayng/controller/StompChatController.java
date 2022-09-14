@@ -39,7 +39,6 @@ public class StompChatController {
     @MessageMapping(value = "/chat/room/{roomId}")
     public void message(@DestinationVariable String roomId, ChatDto message) {
         /*채팅 저장*/
-        log.info(roomId);
         message = chatService.saveChat(Long.parseLong(roomId), message);
         log.info("pub success" + message.getContent());
         template.convertAndSend("/sub/chat/room/" + roomId, message); /*채팅방으로*/
@@ -48,8 +47,6 @@ public class StompChatController {
     @MessageMapping(value = "/room/founder/{memberId}")
     public void invite(@DestinationVariable String memberId, RoomInviteDto inviteDto) {
 //        Member member = new Member();
-        log.info(memberId);
-        log.info(inviteDto.toString());
         long parsedmemberId = Long.parseLong(memberId);
         RoomInfoResponseDto responseDto = roomService.createRoom(parsedmemberId, inviteDto.getMemberId(), inviteDto.getNickname());/*채팅방 개설*/
         log.info("채팅방 개설 완료");
