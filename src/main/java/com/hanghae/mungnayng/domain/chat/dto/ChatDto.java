@@ -20,7 +20,6 @@ public class ChatDto {
     private String content;
     private Long memberId;
     private String createdAt;
-
 //    private String proPic;
 
 
