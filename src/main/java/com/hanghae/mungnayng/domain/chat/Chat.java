@@ -23,11 +23,6 @@ public class Chat extends Timestamped {
     @JoinColumn(name = "room_detail_id", nullable = false)
     private RoomDetail roomDetail;
 
-//
-//    @Column
-//    private String proPic;
-
-
     @Column
     private Long roomInfoId;
 //
