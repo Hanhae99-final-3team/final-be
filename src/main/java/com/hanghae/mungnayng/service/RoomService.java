@@ -25,9 +25,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomInfoRepository roomInfoRepository;
-    private final RoomDetailRepository roomDetailsRepository;
     private final MemberRepository memberRepository;
-
+    private final RoomDetailRepository roomDetailsRepository;
     private final ChatRepository chatRepository;
 
 
