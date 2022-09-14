@@ -8,7 +8,9 @@ import com.hanghae.mungnayng.exception.BadRequestException;
 import com.hanghae.mungnayng.jwt.JwtProvider;
 import com.hanghae.mungnayng.repository.MemberRepository;
 import com.hanghae.mungnayng.repository.RefreshTokenRepository;
+import com.hanghae.mungnayng.util.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final Validator validator;
 
     @Transactional
     public void signUp(SignupRequestDto signupRequestDto) {
@@ -73,5 +76,18 @@ public class MemberService {
     @Transactional
     public void logout(Member member) {
         refreshTokenRepository.deleteByMember(member);
+    }
+
+    /* 검색어 자동저장 토글 On/Off */
+    @Transactional
+    public boolean changeToggle(UserDetails userDetails) {
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
+        Member member = memberRepository.findByNickname(userDetails.getUsername());
+        boolean toggle = member.isToggle();
+        toggle = !toggle;
+        member.updateToggle(toggle);
+
+        return toggle;
     }
 }

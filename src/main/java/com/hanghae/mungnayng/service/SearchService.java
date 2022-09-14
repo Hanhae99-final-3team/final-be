@@ -56,7 +56,7 @@ public class SearchService {
     /* 상품 기본 검색 - 인기순('item - title / content'를 바탕으로) */
     @Transactional
     public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String toggle, String keyword) {
-        String nickname = "null";
+        String nickname = "nonMember";
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
         }

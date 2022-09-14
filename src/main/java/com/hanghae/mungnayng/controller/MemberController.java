@@ -70,4 +70,11 @@ public class MemberController {
     public ResponseEntity<?> kakaoLogin(@RequestParam(value = "code") String code, HttpServletResponse response) throws JsonProcessingException {
         return ResponseEntity.ok(kakaoService.kakaoLogin(code, response));
     }
+
+    /* 검색어 자동저장 토글 ON/OFF */
+    @ApiOperation(value = "검색어 자동저장 토글 On/Off 메소드")
+    @PutMapping("/items/search/toggle")
+    public ResponseEntity<?> changeToggle(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok().body(memberService.changeToggle(userDetails));
+    }
 }
