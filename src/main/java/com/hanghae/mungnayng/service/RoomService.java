@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.service;
 
+import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoRequestDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
@@ -30,23 +31,26 @@ public class RoomService {
     private final ChatRepository chatRepository;
 
 
-    public RoomInfoResponseDto createRoom(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        return createRoom(member);
+    public RoomInfoResponseDto createRoom(Long me, Long memberId, String nickname) {
+        Member member = memberRepository.findById(me).orElseThrow();
+        RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(memberId, nickname);
+        return createRoom(member, RequestDto);
     }
 
-    public RoomInfoResponseDto createRoom(Member member) {
+    public RoomInfoResponseDto createRoom(Member member, RoomInfoRequestDto requestDto) {
         memberRepository.findById(member.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         RoomInfo roomInfo = RoomInfo.builder()
                 .member(member)
-                .nickname(member.getNickname())
+                .nickname(requestDto.getNickname())
                 .roomDetail(new ArrayList<>())
                 .build();
         RoomDetail roomDetail = RoomDetail.builder()
                 .member(member)
                 .roomInfo(roomInfo)
                 .build();
+        int Cnt = roomDetailsRepository.countById(roomInfo.getId());
+        if( Cnt > 2 ) throw new IllegalArgumentException("채팅 내역이 이미 존재합니다.");
 
         roomInfo.getRoomDetail().add(roomDetail);
         roomInfoRepository.save(roomInfo);
@@ -109,10 +113,8 @@ public class RoomService {
     public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
         RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
-        if (!me.getNickname().equals(roomInfo.getNickname()))
+        if (!me.getMemberId().equals(roomInfo.getMember().getMemberId()))
             throw new IllegalArgumentException("권한이 없습니다.");
-        if(inviteDto.getMemberId().equals(roomInfo.getMember().getMemberId()))
-            throw new IllegalArgumentException("이전 채팅 내역이 존재합니다.");
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
         RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, inviteDto.getMemberId())

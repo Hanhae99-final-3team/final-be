@@ -12,4 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomInviteDto {
     private Long memberId;
+    private String nickname;
 }

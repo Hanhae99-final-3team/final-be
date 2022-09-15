@@ -1,12 +1,9 @@
 package com.hanghae.mungnayng.domain.Room.Dto;
 
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
-import com.hanghae.mungnayng.domain.item.Item;
 import lombok.*;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,11 +16,12 @@ public class RoomInfoResponseDto  {
 
 
     public static RoomInfoResponseDto Info(RoomInfo roomInfo) {
-        Item item = new Item();
+        RoomInfoRequestDto requestDto = new RoomInfoRequestDto();
         return RoomInfoResponseDto.builder()
                 .roomInfoId(roomInfo.getId())
-                .nickname(item.getNickname())
+                .nickname(requestDto.getNickname())
                 .createdAt(roomInfo.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
+
 }

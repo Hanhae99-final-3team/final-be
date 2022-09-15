@@ -1,8 +1,10 @@
 package com.hanghae.mungnayng.controller;
 
+import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoRequestDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.service.RoomService;
 import io.swagger.annotations.Api;
@@ -24,9 +26,10 @@ public class RoomController {
 
     @ApiOperation(value = "채팅방 생성 메소드")
     @PostMapping(value = "/roomInfo")
-    public ResponseEntity<?> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @RequestBody RoomInfoRequestDto requestDto) {
         Member member = userDetails.getMember();
-        roomService.createRoom(member);
+        roomService.createRoom(member,requestDto);
         return ResponseEntity.ok().body(Map.of("msg", "생성 완료"));
     }
 
