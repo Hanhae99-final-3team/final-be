@@ -23,14 +23,14 @@ class SearchServiceTest {
     @Mock
     SearchRepository searchRepository;
     @Mock
-    Validator validator;
-    @Mock
     MemberRepository memberRepository;
+    @Mock
+    Validator validator;
 
     @Test
     @DisplayName("상품 검색 정상 동작")
     void searchItem() {
-        SearchService searchService = new SearchService(itemRepository, imageRepository, searchRepository, validator, memberRepository);
+        SearchService searchService = new SearchService(itemRepository, imageRepository, searchRepository, memberRepository, validator);
         UserDetails userDetails = null;
         String toogle = "false";
         String keyword = "sajkdjkasjkldklsajdksajlkdj";
