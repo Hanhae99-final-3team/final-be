@@ -7,11 +7,9 @@ import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.member.dto.KakaoUserInfoDto;
 import com.hanghae.mungnayng.domain.member.dto.LoginResponseDto;
-import com.hanghae.mungnayng.domain.member.dto.SignupResponseDto;
 import com.hanghae.mungnayng.jwt.JwtProvider;
 import com.hanghae.mungnayng.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
@@ -64,7 +61,7 @@ public class KakaoService {
         String refreshToken = jwtProvider.createRefreshToken(kakaoUser, kakaoUser.getRole());
         tokenToHeaders(authorizationToken, refreshToken, response);
 
-        return new LoginResponseDto(kakaoUser.getNickname(), true);
+        return new LoginResponseDto(kakaoUser.getNickname(), kakaoUser.getMemberId(), true);
     }
 
     private String getKakaoAccessToken(String code) throws JsonProcessingException {
