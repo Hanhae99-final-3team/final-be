@@ -49,8 +49,9 @@ public class StompChatController {
     public void invite(@DestinationVariable String memberId, RoomInviteDto inviteDto) {
 //        Member member = new Member();
         log.info(memberId);
+        log.info(inviteDto.toString());
         long parsedmemberId = Long.parseLong(memberId);
-        RoomInfoResponseDto responseDto = roomService.createRoom(parsedmemberId);/*채팅방 개설*/
+        RoomInfoResponseDto responseDto = roomService.createRoom(parsedmemberId, inviteDto.getMemberId(), inviteDto.getNickname());/*채팅방 개설*/
         log.info("채팅방 개설 완료");
         template.convertAndSend("/sub/room/founder/" + memberId, responseDto);
 
