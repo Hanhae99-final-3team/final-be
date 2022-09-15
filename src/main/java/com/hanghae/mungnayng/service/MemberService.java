@@ -55,7 +55,7 @@ public class MemberService {
         String accessToken = jwtProvider.createAuthorizationToken(member.getEmail(), member.getRole());
         String refreshToken = jwtProvider.createRefreshToken(member, member.getRole());
         tokenToHeaders(accessToken, refreshToken, response);
-        return new LoginResponseDto(member.getNickname(), true);
+        return new LoginResponseDto(member.getNickname(), member.getMemberId(), true);
     }
 
     private void checkPassword(String password, String encodedPassword) {

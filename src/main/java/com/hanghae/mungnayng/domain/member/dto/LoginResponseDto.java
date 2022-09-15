@@ -7,5 +7,6 @@ import lombok.Getter;
 @Getter
 public class LoginResponseDto {
     private String nickname;
+    private Long memberId;
     private boolean success;
 }
