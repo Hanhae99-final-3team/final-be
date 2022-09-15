@@ -71,4 +71,11 @@ public class SearchController {
     public ResponseEntity<?> geKeywordAutomatically(@RequestParam("keyword") String keyword){
         return ResponseEntity.ok(searchService.getKeywordAutomatically(keyword));
     }
+
+    /* 현재 토글 상태값 가져오기 */
+    @ApiOperation(value = "현재 토글값 가져오기 메소드")
+    @GetMapping("items/search/toggle")
+    public ResponseEntity<?> getToggleStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(searchService.getToggleStatus(userDetails));
+    }
 }

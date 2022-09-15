@@ -3,6 +3,7 @@ package com.hanghae.mungnayng.service;
 import com.hanghae.mungnayng.domain.image.Image;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.item.dto.ItemMainResponseDto;;
+import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.search.ItemSearch;
 import com.hanghae.mungnayng.domain.search.dto.ItemSearchResponseDto;
 import com.hanghae.mungnayng.repository.*;
@@ -23,6 +24,7 @@ public class SearchService {
     private final ItemRepository itemRepository;
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
+    private final MemberRepository memberRepository;
     private final Validator validator;
 
     /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
@@ -79,6 +81,15 @@ public class SearchService {
         }
 
         return itemMainResponseDtoList;
+    }
+
+    /* 현재 토글 상태값 가져오기 */
+    @Transactional(readOnly = true)
+    public boolean getToggleStatus(UserDetails userDetails){
+        validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
+
+        Member member = memberRepository.findByNickname(userDetails.getUsername());
+        return member.isToggle();
     }
 
     /* 공통 작업 - ResponseDto build */
