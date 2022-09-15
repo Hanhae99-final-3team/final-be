@@ -16,7 +16,6 @@ import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +59,7 @@ public class SwaggerConfig {
 
     /* 버튼 클릭 시 입력값 설정 - JWT를 인증 헤더로 포함하도록 ApiKey를 정의*/
     private ApiKey apiKey() {
-        return new ApiKey("JWT", "Authorization", "header");    /* keyname 설정에 유의 - 토큰 헤더 명 기입 */
+        return new ApiKey("Authorization", "Authorization", "header");    /* keyname 설정에 유의 - 토큰 헤더 명 기입 */
     }
 
     @Getter

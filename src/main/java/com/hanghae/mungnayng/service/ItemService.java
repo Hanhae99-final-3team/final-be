@@ -14,19 +14,18 @@ import com.hanghae.mungnayng.util.TimeUtil;
 import com.hanghae.mungnayng.util.Validator;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
+import java.io.IOException;
+import java.util.*;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemService {
@@ -251,23 +250,27 @@ public class ItemService {
     }
 
     /* 마이페이지 - 내가 조회한 상품 리스트 호출 */
-    public List<ItemMainResponseDto> getItemList(UserDetails userDetails, HttpServletRequest httpServletRequest) {
+    public List<ItemMainResponseDto> getItemList(UserDetails userDetails, Map<String, String> data) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
 
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         int lastData = 0;   /* lastData가 필요없는 메소드이기에 임시값 부여 */
 
-        Cookie[] cookieList = httpServletRequest.getCookies();
-        if (cookieList != null) {
-            for (Cookie cookie : cookieList) {
-                if (cookie.getName().startsWith("itemId")) {
-                    Item item = itemRepository.findById(Long.parseLong(cookie.getValue())).orElseThrow(
-                            () -> new IllegalArgumentException("유효하지 않은 요청입니다.")
-                    );
-                    itemMainResponseDtoList.add(
-                            buildItemMainResponseDto(lastData, item)
-                    );
-                }
+        if (!data.get("cookies").isEmpty()) {
+            String cookies = String.valueOf(data.get("cookies"));   /* Header에서 클라이언트로부터 넘겨받은 쿠키 내용을 꺼내옴 */
+            String cookiesExceptItemId = cookies.replace("itemId", "");
+
+            String[] stringArray = cookiesExceptItemId.split(",");
+            List<String> stringList = Arrays.asList(stringArray);
+
+            for (String string : stringList) {
+                String intStr = string.replaceAll("[^0-9]", "");
+                Item item = itemRepository.findById(Long.parseLong(intStr)).orElseThrow(
+                        () -> new IllegalArgumentException("최근 조회한 상품이 없습니다.")
+                );
+                itemMainResponseDtoList.add(
+                        buildItemMainResponseDto(lastData, item)
+                );
             }
         }
         return itemMainResponseDtoList;
