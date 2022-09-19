@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomInfoRequestDto {
+    private Long me;
     private Long memberId;
-    private String nickname;
+    private Long itemId;
+    private String title;
 }

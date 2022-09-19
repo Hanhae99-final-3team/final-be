@@ -17,12 +17,15 @@ public class ChatDto {
     private String content;
     private Long memberId;
     private String createdAt;
+
+    private  Long roomInfoId;
 //    private String proPic;
 
 
     public ChatDto (Chat chat) {
         Member member = chat.getRoomDetail().getMember();
         this.memberId = member.getMemberId();
+        this.roomInfoId = chat.getRoomInfoId();
 //        this.proPic = member.getProPic();
         this.content = chat.getMessage();
         this.createdAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

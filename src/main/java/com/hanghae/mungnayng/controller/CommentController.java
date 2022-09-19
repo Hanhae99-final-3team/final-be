@@ -60,8 +60,5 @@ public class CommentController {
         Member member = userDetails.getMember();
         commentService.deleteComment(member, itemId, commentId);
         return ResponseEntity.ok().body(Map.of("success", true, "msg", "삭제 성공"));
-
     }
-
-
 }
