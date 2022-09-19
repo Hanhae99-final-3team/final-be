@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.domain.Room;
 
 import com.hanghae.mungnayng.domain.Timestamped;
 import com.hanghae.mungnayng.domain.chat.Chat;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,11 +27,15 @@ public class RoomInfo extends Timestamped {
     private List<RoomDetail> roomDetail = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "itemId")
+    private Item item;
+
+    @ManyToOne
     @JoinColumn(name = "memberId")
     private Member member;
 
     @Column(nullable = false)
-    private String nickname;
+    private String title;
 
     @Column
     private String recentChat;

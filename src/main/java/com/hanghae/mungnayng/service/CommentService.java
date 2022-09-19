@@ -39,8 +39,6 @@ public class CommentService {
     /*댓글 조회*/
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComment(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물 입니다."));
         List<Comment> CommentList = commentRepository.findAllByItem_Id(itemId);
         return CommentList.stream()
 /*원본                  .map(value -> CommentResponseDto.All(value) )*/

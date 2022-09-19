@@ -54,13 +54,15 @@ public class StompInterceptor implements ChannelInterceptor {
         if (command == UNSUBSCRIBE) {
             List<String> disconnectedMemberId = accessor.getNativeHeader("memberId");
             List<String> disconnectedRoomId = accessor.getNativeHeader("roomId");
+            List<String> disconnectedItemId = accessor.getNativeHeader("itemId");
             // 채팅방 unsubscribe 상태 감지
-            if (disconnectedMemberId != null && disconnectedRoomId != null) {
+            if (disconnectedMemberId != null && disconnectedRoomId != null && disconnectedItemId != null ) {
                 Long memberId = Long.parseLong(disconnectedMemberId.get(0));
                 Long roomId = Long.parseLong(disconnectedRoomId.get(0));
+                Long itemId = Long.parseLong(disconnectedItemId.get(0));
 
-                roomService.updateLastReadChat(roomId, memberId);
-                log.info("member #" + memberId + " leave chat room #" + roomId);
+                roomService.updateLastReadChat(roomId, memberId, itemId);
+                log.info("member #" + memberId + " leave chat room #" + roomId + "item #" + itemId);
             }
         }
     }

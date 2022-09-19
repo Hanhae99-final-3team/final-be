@@ -1,8 +1,10 @@
 package com.hanghae.mungnayng.service;
 
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
+import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
+import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +41,11 @@ public class ChatService {
 
 
     /*채팅 보내기*/
-    public List<ChatDto> getChat(Long roomId) {
-        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId);
-
+    @Transactional
+    public List<ChatDto> getChat(Member member, RoomInfo roomInfo) {
+        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomInfo.getId());
         return chats.stream()
                 .map(ChatDto::new)
                 .collect(Collectors.toList());
-
     }
-
 }

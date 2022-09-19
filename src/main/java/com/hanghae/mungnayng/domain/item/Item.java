@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.domain.item;
 
+import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.Timestamped;
 import com.hanghae.mungnayng.domain.comment.Comment;
 import com.hanghae.mungnayng.domain.image.Image;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -42,6 +44,9 @@ public class Item extends Timestamped {
 
     @Column
     private String location;
+
+    @OneToMany(fetch =  FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private  List <RoomInfo> roomInfos = new ArrayList<>();
 
     @Column
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
