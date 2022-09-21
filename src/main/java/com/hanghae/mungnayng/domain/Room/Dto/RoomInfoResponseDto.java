@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class RoomInfoResponseDto  {
     private Long roomInfoId;
+    private String nickname;
     private String title;
     private String createdAt;
 
@@ -18,6 +19,7 @@ public class RoomInfoResponseDto  {
     public static RoomInfoResponseDto Info(RoomInfo roomInfo) {
         return RoomInfoResponseDto.builder()
                 .roomInfoId(roomInfo.getId())
+                .nickname(roomInfo.getNickname())
                 .title(roomInfo.getTitle())
                 .createdAt(roomInfo.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();

@@ -42,7 +42,7 @@ public class ChatService {
 
     /*채팅 보내기*/
     @Transactional
-    public List<ChatDto> getChat(Member member, RoomInfo roomInfo) {
+    public List<ChatDto> getChat(RoomInfo roomInfo) {
         List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomInfo.getId());
         return chats.stream()
                 .map(ChatDto::new)

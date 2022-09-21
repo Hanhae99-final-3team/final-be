@@ -33,9 +33,9 @@ public class RoomService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public RoomInfoResponseDto createRoom(Long me, Long memberId,Long itemId, String title) {
+    public RoomInfoResponseDto createRoom(String nickname, Long me, Long memberId,Long itemId, String title) {
         Member member = memberRepository.findById(me).orElseThrow();
-        RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(member.getMemberId(), memberId, itemId, title);
+        RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(nickname, member.getMemberId(), memberId, itemId, title);
         return createRoom(member, RequestDto);
     }
 
@@ -48,6 +48,7 @@ public class RoomService {
                     RoomInfo roomInfo = RoomInfo.builder()
                             .member(member)
                             .item(item)
+                            .nickname(requestDto.getNickname())
                             .title(requestDto.getTitle())
                             .roomDetail(new ArrayList<>())
                             .build();
