@@ -30,12 +30,11 @@ public class ChatController {
     @GetMapping("/room/{itemId}")
     public ResponseEntity<?> getRoomChat(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                          @PathVariable Long itemId) {
-        RoomInfo roomInfo = roomInfoRepository.findRoomInfoByItem_Id(itemId)
-                .orElseThrow(()-> new IllegalArgumentException("채팅방이 없어요!"));
         Member member = userDetails.getMember();
+        RoomInfo roomInfo = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), itemId)
+                .orElseThrow(()-> new IllegalArgumentException("채팅방이 없어요!"));
         RoomDetail roomDetail = roomDetailRepository.findByMemberMemberId(member.getMemberId())
                 .orElseThrow(()-> new IllegalArgumentException("채팅 내역이 없습니다"));
-        log.info(member.getMemberId());
     List<ChatDto> chats = chatService.getChat(member, roomInfo);
         return ResponseEntity.ok().body(chats);
     }
