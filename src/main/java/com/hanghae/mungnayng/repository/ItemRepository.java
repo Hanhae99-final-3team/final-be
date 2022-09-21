@@ -57,9 +57,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> getAllItemListByOrderByPopularity(String keyword);
 
     /* 내가 찜한 상품 조회 */
-    @Query(nativeQuery = true, value =
-    "select * from item i inner join zzim z on i.id = z.item_id " +
-            "where z.zzimed_by = :nickname order by z.id desc")
+    @Query("select i from Item i " +
+            "inner join Zzim z on i.id = z.item.id " +
+            "where z.zzimedBy = :nickname order by z.id desc")
     List<Item> getAllItemListByZzimedId(String nickname);
 
     /* 내가 등록한 상품 조회 */
@@ -83,9 +83,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     int getSecondItemsPriceSum(String nickname);
 
     /* 마이페이지 - 차트용 데이터 호출(내가 찜한 상품 가격의 총합) */
-    @Query(nativeQuery = true, value =
-            "select sum(selling_price) from item i inner join zzim z " +
-                    "on z.item_id = i.id where z.zzimed_by = :nickname")
+    @Query("select sum(i.sellingPrice) from Item i " +
+            "inner join Zzim z on z.item.id = i.id " +
+            "where z.zzimedBy = :nickname")
     int getThirdItemsPriceSum(String nickname);
 
     /* itemCategory 등록상품의 평균 가격 호출 */
