@@ -160,8 +160,6 @@ public class ItemService {
 
         item.update(itemRequestDto);
 
-        imageRepository.deleteAllByItemId(itemId);
-
         List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
 
         if (multipartFileList != null) {
