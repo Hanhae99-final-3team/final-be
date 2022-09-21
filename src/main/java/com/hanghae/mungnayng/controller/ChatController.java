@@ -33,9 +33,7 @@ public class ChatController {
         Member member = userDetails.getMember();
         RoomInfo roomInfo = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), itemId)
                 .orElseThrow(()-> new IllegalArgumentException("채팅방이 없어요!"));
-        RoomDetail roomDetail = roomDetailRepository.findByMemberMemberId(member.getMemberId())
-                .orElseThrow(()-> new IllegalArgumentException("채팅 내역이 없습니다"));
-    List<ChatDto> chats = chatService.getChat(member, roomInfo);
+    List<ChatDto> chats = chatService.getChat(roomInfo);
         return ResponseEntity.ok().body(chats);
     }
 }
