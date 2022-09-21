@@ -43,7 +43,7 @@ public class RoomService {
     public RoomInfoResponseDto createRoom(Member member, RoomInfoRequestDto requestDto) {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        RoomInfo room = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())
+        RoomInfo room = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
                 .orElseGet(() ->{
                     RoomInfo roomInfo = RoomInfo.builder()
                             .member(member)
