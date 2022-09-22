@@ -10,6 +10,8 @@ import com.hanghae.mungnayng.repository.*;
 import com.hanghae.mungnayng.util.TimeUtil;
 import com.hanghae.mungnayng.util.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class SearchService {
     private final MemberRepository memberRepository;
     private final Validator validator;
 
-    /* 상품 기본 검색 - 최신순('item - title / content'를 바탕으로) */
+    /** 상품 기본 검색 메서드 - 최신순 정렬(item.title, content, petCategory, itemCategory) */
     @Transactional
     public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String toggle, String keyword) {
         String nickname = "nonMember";  /* 비회원으로 검색할 경우 nickname은 nonMember로 저장 */
@@ -55,7 +57,7 @@ public class SearchService {
         return itemMainResponseDtoList;
     }
 
-    /* 상품 기본 검색 - 인기순('item - title / content'를 바탕으로) */
+    /** 상품 기본 검색 - 인기순 정렬(item.title, content, petCategory, itemCategory) */
     @Transactional
     public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String toggle, String keyword) {
         String nickname = "nonMember";
@@ -83,7 +85,7 @@ public class SearchService {
         return itemMainResponseDtoList;
     }
 
-    /* 현재 토글 상태값 가져오기 */
+    /** 검색어 자동저장 토글 상태값 가져오기 메서드 */
     @Transactional(readOnly = true)
     public boolean getToggleStatus(UserDetails userDetails){
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -118,8 +120,8 @@ public class SearchService {
                 .build();
     }
 
-    /* 최근 검색어 조회 */
-    public List<ItemSearchResponseDto> getSearchWord(UserDetails userDetails) {
+    /* 최근 검색어 조회 메서드 */
+    public List<ItemSearchResponseDto> getSearchWord(UserDetails userDetails, Pageable pageable) {
         List<ItemSearchResponseDto> itemSearchResponseDtoList = new ArrayList<>();
 
         if (userDetails == null) {    /* 비로그인 시 빈 배열 출력 */
@@ -127,7 +129,7 @@ public class SearchService {
         }
 
         String nickname = (userDetails.getUsername());
-        List<String> searchWordList = searchRepository.getAllByNickname(nickname);
+        Page<String> searchWordList = searchRepository.getAllByNickname(nickname, pageable);
         for (String string : searchWordList) {
             itemSearchResponseDtoList.add(
                     ItemSearchResponseDto.builder()
@@ -138,15 +140,15 @@ public class SearchService {
         return itemSearchResponseDtoList;
     }
 
-    /* 최근 검색어 개별 삭제*/
+    /* 최근 검색어 개별 삭제 메서드 */
     public void deleteSearchWord(UserDetails userDetails, String searchWord) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
 
-        List<ItemSearch> itemSearchList = searchRepository.getAllSearchWordByNicknameAndSearchWord(userDetails.getUsername(), searchWord);
-        searchRepository.deleteAll(itemSearchList);
+        ItemSearch itemSearch = searchRepository.getSearchWordByNicknameAndSearchWord(userDetails.getUsername(), searchWord);
+        searchRepository.delete(itemSearch);
     }
 
-    /* 최근 검색어 전체 삭제 */
+    /* 최근 검색어 전체 삭제 메서드 */
     public void deleteAllSearchWord(UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
 
@@ -154,9 +156,9 @@ public class SearchService {
         searchRepository.deleteAll(itemSearchList);
     }
 
-    /* 인기 검색어 조회 */
-    public List<ItemSearchResponseDto> getPopularSearchWord() {
-        List<String> searchwordList = searchRepository.getAllByPopularity();
+    /* 인기 검색어 조회 메서드 */
+    public List<ItemSearchResponseDto> getPopularSearchWord(Pageable pageable) {
+        Page<String> searchwordList = searchRepository.getAllByPopularity(pageable);
         List<ItemSearchResponseDto> itemSearchResponseDtoList = new ArrayList<>();
         for (String string : searchwordList) {
             itemSearchResponseDtoList.add(
@@ -168,7 +170,7 @@ public class SearchService {
         return itemSearchResponseDtoList;
     }
 
-    /* 검색어 자동완성 */
+    /* 검색어 자동완성 메서드 */
     public List<ItemSearchResponseDto> getKeywordAutomatically(String keyword) {
         List<String> searchwordList = searchRepository.getSearchwordByKeyword(keyword);
         List<ItemSearchResponseDto> itemSearchResponseDtoList = new ArrayList<>();
