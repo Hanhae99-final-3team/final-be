@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
@@ -90,9 +92,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where z.zzimedBy = :nickname")
     int getThirdItemsPriceSum(String nickname);
 
-    /** itemCategory 등록상품의 평균 가격 호출 */
-    /* TODO :: queryDSL로 limit 줄 것(100개정도) */
-    @Query("select avg(i.sellingPrice) from Item i " +
-            "where i.itemCategory = :itemCategory ")
-    Long getAveragePrice(String itemCategory);
+    /** 특정 itemCategory 등록상품 100개 리스트화 메소드(평균 가격 도출 위함) */
+    List<Item> getTop100ByItemCategoryOrderByIdDesc(@Param("itemCategory") String itemCategory);
 }
