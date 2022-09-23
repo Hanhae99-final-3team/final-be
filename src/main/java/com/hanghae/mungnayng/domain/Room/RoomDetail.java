@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,20 +40,6 @@ public class RoomDetail {
         this.roomInfo = roomInfo;
         this.member = member;
         this.item = item;
-    }
-
-    @Column
-    private Long chatId;
-
-    public void updateChatId(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    @Column
-    private Long chatId;
-
-    public void updateChatId(Long chatId) {
-        this.chatId = chatId;
     }
 
     @Column
