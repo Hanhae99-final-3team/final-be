@@ -24,7 +24,7 @@ public class RoomInfo extends Timestamped {
     private Long id;
 
     @OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<RoomDetail> roomDetail = new ArrayList<>();
+    private List<RoomDetail> roomDetail;
 
     @ManyToOne
     @JoinColumn(name = "itemId")

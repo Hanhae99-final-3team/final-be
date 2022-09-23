@@ -45,11 +45,11 @@ public class Item extends Timestamped {
     @Column
     private String location;
 
-    @OneToMany(fetch =  FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
-    private  List <RoomInfo> roomInfos = new ArrayList<>();
+    @OneToMany(fetch =  FetchType.LAZY, mappedBy="item", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private  List <RoomInfo> roomInfo;
 
     @Column
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comment;
 
     @Column(columnDefinition = "integer default 0", nullable = false)

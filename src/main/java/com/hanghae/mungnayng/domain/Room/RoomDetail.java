@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.domain.Room;
 
+import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,24 +33,13 @@ public class RoomDetail {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @OneToMany(mappedBy = "roomDetail", cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<Chat> chat;
+
     public RoomDetail(RoomInfo roomInfo, Member member,  Item item) {
         this.roomInfo = roomInfo;
         this.member = member;
         this.item = item;
-    }
-
-    @Column
-    private Long chatId;
-
-    public void updateChatId(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    @Column
-    private Long chatId;
-
-    public void updateChatId(Long chatId) {
-        this.chatId = chatId;
     }
 
     @Column
