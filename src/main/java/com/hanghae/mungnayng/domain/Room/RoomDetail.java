@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.domain.Room;
 
+import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,6 +29,9 @@ public class RoomDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @OneToMany(mappedBy = "roomDetail", cascade = CascadeType.REMOVE ,fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Chat> chats;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)

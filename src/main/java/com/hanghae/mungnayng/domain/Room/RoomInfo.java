@@ -23,8 +23,8 @@ public class RoomInfo extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<RoomDetail> roomDetail = new ArrayList<>();
+    @OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<RoomDetail> roomDetail;
 
     @ManyToOne
     @JoinColumn(name = "itemId")
