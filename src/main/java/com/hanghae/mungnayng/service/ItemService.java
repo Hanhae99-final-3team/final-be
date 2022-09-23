@@ -37,7 +37,7 @@ public class ItemService {
     private final MemberRepository memberRepository;
     private final Validator validator;
 
-    /* 상품 등록 */
+    /** 상품 등록 메서드*/
     public ItemResponseDto createItem(UserDetails userDetails, ItemRequestDto itemRequestDto) throws IOException {
         validator.validateCreateItemInput(userDetails, itemRequestDto);    /* 상품 등록 메소드 유효성 검사 메소드화 */
 
@@ -68,7 +68,7 @@ public class ItemService {
         return buildItemResponseDto(userDetails, item);
     }
 
-    /* 전체 상품 조회(MainPage) */
+    /** 전체 상품 조회 메서드(MainPage) */
     @Transactional(readOnly = true)
     public List<ItemMainResponseDto> getAllItem(Pageable pageable) {
         Page<Item> itemList = itemRepository.findAll(pageable);
@@ -84,7 +84,7 @@ public class ItemService {
         return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(MainPage/이중 카테고리) */
+    /** 카테고리에 따른 상품 조회 메서드(MainPage/이중 카테고리) */
     @Transactional(readOnly = true)
     public List<ItemMainResponseDto> getItemByTwoCategory(String petCategory, String itemCategory, Pageable pageable) {
         validator.validateItemCategory(itemCategory);    /* 상품 카테고리 유효성 검사 */
@@ -103,7 +103,7 @@ public class ItemService {
         return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
+    /** 카테고리에 따른 상품 조회 메서드(MainPage/단일 카테고리 - petCategory) */
     public List<ItemMainResponseDto> getItemByPetCategory(String petCategory, Pageable pageable) {
         validator.validatePetCategory(petCategory);    /* 펫 카테고리 유효성 검사 */
 
@@ -120,7 +120,7 @@ public class ItemService {
         return itemMainResponseDtoList;
     }
 
-    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
+    /** 카테고리에 따른 상품 조회 메서드(MainPage/단일 카테고리 - itemCategory) */
     public List<ItemMainResponseDto> getItemByItemCategory(String itemCategory, Pageable pageable) {
         validator.validateItemCategory(itemCategory);    /* 상품 카테고리 유효성 검사 */
 
@@ -137,7 +137,7 @@ public class ItemService {
         return itemMainResponseDtoList;
     }
 
-    /* 단일 상품 조회(DetailPage) */
+    /** 단일 상품 조회 메서드(detail) */
     @Transactional(readOnly = true)
     public ItemResponseDto getItem(UserDetails userDetails, Long itemId) {
         Item item = validator.validateItemExistence(itemId);    /* 상품 존재 여부 유효성 검사 및 반환 */
@@ -145,13 +145,13 @@ public class ItemService {
         return buildItemResponseDto(userDetails, item);
     }
 
-    /* 조회수 증가(단일 상품 조회 시) */
+    /** 조회수 증가 메서드(단일 상품 조회 시) */
     @Transactional
     public void addViewCnt(Long itemId) {
         itemRepository.addViewCnt(itemId);
     }
 
-    /* 상품 수정 - detail */
+    /* 상품 수정 메서드(detail) */
     @Transactional
     public ItemResponseDto updateItem(UserDetails userDetails, Long itemId, ItemRequestDto itemRequestDto) throws IOException {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -159,8 +159,6 @@ public class ItemService {
         validator.validateEqualUser(userDetails, item);    /* 작성자와 조회자 일치 여부 유효성 검사 */
 
         item.update(itemRequestDto);
-
-        imageRepository.deleteAllByItemId(itemId);
 
         List<MultipartFile> multipartFileList = itemRequestDto.getMultipartFileList();
 
@@ -178,7 +176,7 @@ public class ItemService {
         return buildItemResponseDto(userDetails, item);
     }
 
-    /* 상품 삭제 - detail */
+    /* 상품 삭제 메서드(detail) */
     @Transactional
     public void deleteItem(UserDetails userDetails, Long itemId) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -188,7 +186,7 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    /* 내가 등록한 상품 조회(MyPage) */
+    /* 내가 등록한 상품 조회 메서드(mypage) */
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getMyItem(UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -204,7 +202,7 @@ public class ItemService {
         return itemResponseDtoList;
     }
 
-    /* 마이페이지 차트 호출 */
+    /* 마이페이지 - 차트 호출 메서드(mypage) */
     @Transactional(readOnly = true)
     public List<ChartResponseDto> getMyChart(UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -249,7 +247,7 @@ public class ItemService {
         return chartResponseDtoList;
     }
 
-    /* 마이페이지 - 내가 조회한 상품 리스트 호출 */
+    /* 마이페이지 - 내가 조회한 상품 리스트 호출 메서드(mypage) */
     public List<ItemMainResponseDto> getItemList(UserDetails userDetails, Map<String, String> data) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
 
@@ -280,7 +278,13 @@ public class ItemService {
     private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         int commentCnt = commentRepository.countByItem_Id(item.getId());
-        Long averagePrice = itemRepository.getAveragePrice(item.getItemCategory());    /* 해당 item이 속한 itemCategory 상품의 평균가격 도출 */
+        /* 해당 item이 속한 itemCategory 상품의 평균가격 도출(최근 등록된 해당 카테고리 상품 100개 기준) */
+        List<Item> itemList = itemRepository.getTop100ByItemCategoryOrderByIdDesc(item.getItemCategory());
+        long averagePrice = 0L;
+        for(Item items : itemList){
+            averagePrice = averagePrice + items.getSellingPrice();
+        }
+        averagePrice = averagePrice / itemList.size();
 
         /* 해당 item의 이미지 호출 */
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());

@@ -1,6 +1,13 @@
+buildscript {	/* queryDSL */
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"		/* queryDSL */
 	id 'java'
 }
 
@@ -29,8 +36,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'	/* s3업로드 */
-	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'	/* swagger */
+	/* s3업로드 */
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
+	/* swagger */
+	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+	/* queryDSL */
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
@@ -39,4 +51,23 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+/* queryDSL */
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
 }

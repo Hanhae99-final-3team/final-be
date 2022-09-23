@@ -42,7 +42,8 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
                 "http://meongnyangmarket.s3-website.ap-northeast-2.amazonaws.com",
-                "https://d13psgq1alfu1t.cloudfront.net"));
+                "https://d13psgq1alfu1t.cloudfront.net",
+                "https://meongnyang-market.com/"));
         /* method */
         configuration.setAllowedMethods(Arrays.asList("*"));
         /* header */

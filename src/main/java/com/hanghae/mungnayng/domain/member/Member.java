@@ -32,6 +32,13 @@ public class Member extends Timestamped {
 
     private String role;
 
+    @Column(columnDefinition = "boolean default false", nullable = false)
+    private boolean toggle;
+
+    public void updateToggle(boolean toggle) {
+        this.toggle = toggle;
+    }
+
     public Member(String email, String nickname, String password) {
         this.email = email;
         this.nickname = nickname;
