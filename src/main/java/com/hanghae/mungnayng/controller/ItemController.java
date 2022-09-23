@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.controller;
 
 
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
+import com.hanghae.mungnayng.domain.item.dto.ItemRequestParam;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.service.ItemService;
 import io.swagger.annotations.Api;
@@ -36,16 +37,25 @@ public class ItemController {
     /* 전체 상품 조회(MainPage) */
     @ApiOperation(value = "전체 상품 조회 메소드")
     @GetMapping("items")
-    public ResponseEntity<?> getAllItem(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getAllItem(pageable));
+    public ResponseEntity<?> getAllItem(ItemRequestParam itemRequestParam,
+                                        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getAllItem(itemRequestParam, pageable));
     }
+
+    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
+//    @ApiOperation(value = "pet_category에 따른 상품 조회 메소드")
+//    @GetMapping("items/petcategory")
+//    public ResponseEntity<?> getItemByPetCategory(@RequestParam("petCategory") String petCategory,
+//                                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+//        return ResponseEntity.ok().body(itemService.getItemByPetCategory(petCategory, pageable));
+//    }
 
     /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
     @ApiOperation(value = "pet_category에 따른 상품 조회 메소드")
     @GetMapping("items/petcategory")
-    public ResponseEntity<?> getItemByPetCategory(@RequestParam("petCategory") String petCategory,
+    public ResponseEntity<?> getItemByPetCategory(ItemRequestParam itemRequestParam,
                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByPetCategory(petCategory, pageable));
+        return ResponseEntity.ok().body(itemService.getItemByPetCategory(itemRequestParam, pageable));
     }
 
     /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
