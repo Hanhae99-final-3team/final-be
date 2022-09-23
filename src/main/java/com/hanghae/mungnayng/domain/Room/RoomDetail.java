@@ -29,24 +29,17 @@ public class RoomDetail {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "roomDetail", cascade = CascadeType.REMOVE ,fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Chat> chats;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
-
-    @OneToMany(mappedBy = "roomDetail", cascade = CascadeType.REMOVE,orphanRemoval = true)
-    private List<Chat> chat;
 
     public RoomDetail(RoomInfo roomInfo, Member member,  Item item) {
         this.roomInfo = roomInfo;
         this.member = member;
         this.item = item;
-    }
-
-    @Column
-    private Long chatId;
-
-    public void updateChatId(Long chatId) {
-        this.chatId = chatId;
     }
 
     @Column

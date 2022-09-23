@@ -27,6 +27,7 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final RoomDetailRepository roomDetailsRepository;
     private final ChatRepository chatRepository;
+    private final RedisRepository redisRepository;
 
     private final ItemRepository itemRepository;
 
@@ -57,6 +58,7 @@ public class RoomService {
                             .build();
                     roomInfo.getRoomDetail().add(roomDetail);
                     roomInfoRepository.save(roomInfo);
+                    redisRepository.subscribe(roomInfo.getId().toString());
                     return roomInfo;
                 });
         return RoomInfoResponseDto.Info(room);
