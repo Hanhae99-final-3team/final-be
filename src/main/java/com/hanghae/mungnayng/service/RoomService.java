@@ -5,8 +5,6 @@ import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
-import com.hanghae.mungnayng.domain.chat.Chat;
-import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,7 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final RoomDetailRepository roomDetailsRepository;
     private final ChatRepository chatRepository;
+    private final RedisRepository redisRepository;
 
     private final ItemRepository itemRepository;
 
@@ -59,6 +58,7 @@ public class RoomService {
                             .build();
                     roomInfo.getRoomDetail().add(roomDetail);
                     roomInfoRepository.save(roomInfo);
+                    redisRepository.subscribe(roomInfo.getId().toString());
                     return roomInfo;
                 });
         return RoomInfoResponseDto.Info(room);
@@ -68,6 +68,18 @@ public class RoomService {
     @Transactional
     public void updateLastReadChat(Long roomId, Long memberId, Long itemId) {
         RoomDetail detail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberIdAndItem_Id(roomId, memberId, itemId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
+
+        Chat chat = chatRepository.findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
+
+        detail.updateChatId(chat.getId());
+    }
+
+
+    @Transactional
+    public void updateLastReadChat(Long roomId, Long memberId) {
+        RoomDetail detail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, memberId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
 
         Chat chat = chatRepository.findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId)

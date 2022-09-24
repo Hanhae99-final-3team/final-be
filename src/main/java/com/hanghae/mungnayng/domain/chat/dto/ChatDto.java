@@ -28,6 +28,6 @@ public class ChatDto {
         this.memberId = member.getMemberId();
 //        this.proPic = member.getProPic();
         this.content = chat.getMessage();
-        this.createdAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of("JST")));
+        this.createdAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of("Asia/Seoul")));
     }
 }

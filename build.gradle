@@ -43,6 +43,9 @@ dependencies {
 	/* queryDSL */
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'/*redis*/
+//	implementation 'org.springframework.session:spring-session-data-redis'/*redis세션*/
+
 
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
