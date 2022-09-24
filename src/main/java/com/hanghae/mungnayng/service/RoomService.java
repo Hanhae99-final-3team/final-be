@@ -1,54 +1,79 @@
 package com.hanghae.mungnayng.service;
 
-
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoRequestDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
+import com.hanghae.mungnayng.domain.chat.Chat;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
-import com.hanghae.mungnayng.repository.MemberRepository;
-import com.hanghae.mungnayng.repository.RoomDetailRepository;
-import com.hanghae.mungnayng.repository.RoomInfoRepository;
+import com.hanghae.mungnayng.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomInfoRepository roomInfoRepository;
-    private final RoomDetailRepository roomDetailRepository;
     private final MemberRepository memberRepository;
+    private final RoomDetailRepository roomDetailsRepository;
+    private final ChatRepository chatRepository;
 
-    public RoomInfoResponseDto createRoom(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        return createRoom(member);
+    private final ItemRepository itemRepository;
+
+    @Transactional
+    public RoomInfoResponseDto createRoom(String nickname, Long me, Long memberId,Long itemId, String title) {
+        Member member = memberRepository.findById(me).orElseThrow();
+        RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(nickname, member.getMemberId(), memberId, itemId, title);
+        return createRoom(member, RequestDto);
     }
 
-    public RoomInfoResponseDto createRoom(Member member) {
-        memberRepository.findById(member.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-        RoomInfo roomInfo = RoomInfo.builder()
-                .member(member)
-                .nickname(member.getNickname())
-                .roomDetail(new ArrayList<>())
-                .build();
-        RoomDetail roomDetail = RoomDetail.builder()
-                .member(member)
-                .roomInfo(roomInfo)
-                .build();
+    @Transactional
+    public RoomInfoResponseDto createRoom(Member member, RoomInfoRequestDto requestDto) {
+        Item item = itemRepository.findById(requestDto.getItemId())
+                .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 없습니다."));
+        RoomInfo room = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
+                .orElseGet(() ->{
+                    RoomInfo roomInfo = RoomInfo.builder()
+                            .member(member)
+                            .item(item)
+                            .nickname(requestDto.getNickname())
+                            .title(requestDto.getTitle())
+                            .roomDetail(new ArrayList<>())
+                            .build();
+                    RoomDetail roomDetail = RoomDetail.builder()
+                            .item(item)
+                            .member(member)
+                            .roomInfo(roomInfo)
+                            .build();
+                    roomInfo.getRoomDetail().add(roomDetail);
+                    roomInfoRepository.save(roomInfo);
+                    return roomInfo;
+                });
+        return RoomInfoResponseDto.Info(room);
+    }
 
-        roomInfo.getRoomDetail().add(roomDetail);
-        roomInfoRepository.save(roomInfo);
-        return RoomInfoResponseDto.Info(roomInfo);
+
+    @Transactional
+    public void updateLastReadChat(Long roomId, Long memberId, Long itemId) {
+        RoomDetail detail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberIdAndItem_Id(roomId, memberId, itemId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
+
+        Chat chat = chatRepository.findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
+
+        detail.updateChatId(chat.getId());
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +111,7 @@ public class RoomService {
         roomInfoRepository.delete(roomInfo);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void inviteRoom(Long memberId, Long roomId, RoomInviteDto inviteDto) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         inviteRoom(member, roomId, inviteDto);
@@ -95,14 +120,18 @@ public class RoomService {
     public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
         RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
-        if (!me.getNickname().equals(roomInfo.getNickname()))
+        if (!me.getMemberId().equals(roomInfo.getMember().getMemberId()))
             throw new IllegalArgumentException("권한이 없습니다.");
-
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
-        RoomDetail roomDetail = roomDetailRepository.findByRoomInfo_IdAndMember_MemberId(roomInfoId, inviteDto.getMemberId())
-                .orElse(new RoomDetail(roomInfo, member));
-        roomDetailRepository.save(roomDetail);
+        log.info(member.toString());
+        Item item = itemRepository.findById(inviteDto.getItemId())
+                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        log.info(item.toString());
+        RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberIdAndItem_Id(roomInfoId, inviteDto.getMemberId(),inviteDto.getItemId())
+                .orElse(new RoomDetail(roomInfo, member, item));
+
+        roomDetailsRepository.save(roomDetail);
 
     }
 }

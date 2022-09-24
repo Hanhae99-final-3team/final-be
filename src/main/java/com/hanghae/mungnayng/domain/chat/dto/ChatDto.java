@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
+import static java.util.Map.entry;
 
 
 @Getter
@@ -16,13 +19,15 @@ import java.time.format.DateTimeFormatter;
 public class ChatDto {
     private String content;
     private Long memberId;
-    private String CreatedAt;
+    private String createdAt;
+//    private String proPic;
 
 
     public ChatDto (Chat chat) {
         Member member = chat.getRoomDetail().getMember();
         this.memberId = member.getMemberId();
+//        this.proPic = member.getProPic();
         this.content = chat.getMessage();
-        this.CreatedAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.createdAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of("JST")));
     }
 }

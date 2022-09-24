@@ -1,8 +1,10 @@
 package com.hanghae.mungnayng.service;
 
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
+import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
+import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +19,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-    private final RoomDetailRepository roomDetailRepository;
+    private final RoomDetailRepository roomDetailsRepository;
     private final ChatRepository chatRepository;
 
     @Transactional
     public ChatDto saveChat(Long roomId, ChatDto message) {
-        RoomDetail roomDetail = roomDetailRepository.findByRoomInfo_IdAndMember_MemberId(roomId, message.getMemberId())
+        RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, message.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 관한 정보가 없습니다."));
 
+        roomDetail.getRoomInfo().updateRecentChat(message.getContent());
+        log.info(roomDetail.getRoomInfo().getId().toString());
+        log.info(roomDetail.getRoomInfo().getRecentChat());
         Chat chat = Chat.builder()
                 .roomDetail(roomDetail)
                 .message(message.getContent())
@@ -36,13 +41,11 @@ public class ChatService {
 
 
     /*채팅 보내기*/
-    public List<ChatDto> getChat(Long roomId) {
-        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtAsc(roomId);
-
+    @Transactional
+    public List<ChatDto> getChat(RoomInfo roomInfo) {
+        List<Chat> chats = chatRepository.findByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomInfo.getId());
         return chats.stream()
                 .map(ChatDto::new)
                 .collect(Collectors.toList());
-
     }
-
 }
