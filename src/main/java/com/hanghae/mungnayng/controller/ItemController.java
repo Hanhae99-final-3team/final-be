@@ -2,6 +2,7 @@ package com.hanghae.mungnayng.controller;
 
 
 import com.hanghae.mungnayng.domain.item.dto.ItemRequestDto;
+import com.hanghae.mungnayng.domain.item.dto.ItemRequestParam;
 import com.hanghae.mungnayng.domain.item.dto.ItemResponseDto;
 import com.hanghae.mungnayng.service.ItemService;
 import io.swagger.annotations.Api;
@@ -36,32 +37,9 @@ public class ItemController {
     /* 전체 상품 조회(MainPage) */
     @ApiOperation(value = "전체 상품 조회 메소드")
     @GetMapping("items")
-    public ResponseEntity<?> getAllItem(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getAllItem(pageable));
-    }
-
-    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - petCategory) */
-    @ApiOperation(value = "pet_category에 따른 상품 조회 메소드")
-    @GetMapping("items/petcategory")
-    public ResponseEntity<?> getItemByPetCategory(@RequestParam("petCategory") String petCategory,
-                                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByPetCategory(petCategory, pageable));
-    }
-
-    /* 카테고리에 따른 상품 조회(MainPage/단일 카테고리 - itemCategory) */
-    @ApiOperation(value = "item_category에 따른 상품 조회 메소드")
-    @GetMapping("items/itemcategory")
-    public ResponseEntity<?> getItemByItemCategory(@RequestParam("itemCategory") String itemCategory,
-                                                   @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByItemCategory(itemCategory, pageable));
-    }
-
-    /* 카테고리에 따른 상품 조회(MainPage/이중 카테고리) */
-    @ApiOperation(value = "카테고리를 2중(pet_category + item_category)으로 반영한 상품 조회 메소드")
-    @GetMapping("items/twocategory")
-    public ResponseEntity<?> getItemByTwoCategory(@RequestParam("petCategory") String petCategory, @RequestParam("itemCategory") String itemCategory,
-                                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok().body(itemService.getItemByTwoCategory(petCategory, itemCategory, pageable));
+    public ResponseEntity<?> getAllItem(ItemRequestParam itemRequestParam,
+                                        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok().body(itemService.getAllItem(itemRequestParam, pageable));
     }
 
     /* 단일 상품 조회(DetailPage) */
@@ -76,12 +54,6 @@ public class ItemController {
                 .maxAge(24 * 60 * 60)   /* 쿠키 만료 기한은 하루 */
                 .build();
         httpServletResponse.addHeader("Set-Cookie", cookie.toString());
-
-//        Cookie cookie = new Cookie("itemId" + itemId, Long.toString(itemId));    /* itemId로 신규 쿠키 생성(cookie name은 중복불가 */
-//        cookie.setPath("/");
-//        cookie.setMaxAge(24 * 60 * 60);   /* 쿠키 만료 기한은 하루 */
-//        httpServletResponse.addCookie(cookie);   /* response로 쿠키를 담아 보냄 */
-
 
         ItemResponseDto itemResponseDto = itemService.getItem(userDetails, itemId);
         itemService.addViewCnt(itemId);
