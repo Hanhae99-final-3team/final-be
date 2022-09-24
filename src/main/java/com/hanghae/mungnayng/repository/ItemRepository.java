@@ -18,48 +18,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Page<Item> findAll(Pageable pageable);
 
     /**
-     * 상품 리스트 호출 시 LastData(마지막 게시글)인지 확인
-     */
-    @Query("select min(i.id) from Item i")   /* 전체 상품 조회 */
-    int lastData();
-
-    @Query("select min(i.id) from Item i where i.petCategory = :petCategory")    /* 펫 카테고리 */
-    int lastDataPetCategory(String petCategory);
-
-    @Query("select min(i.id) from Item i where i.itemCategory = :itemCategory")    /* 아이템 카테고리 */
-    int lastDataItemCategory(String itemCategory);
-
-    @Query("select min(i.id) from Item i where i.petCategory = :petCategory and i.itemCategory = :itemCategory")
-    int lastDataTwoCategory(String petCategory, String itemCategory);   /* 이중 카테고리 */
-
-    /**
      * 상품 단일 조회 시 viewCnt + 1
      */
     @Modifying
     @Query("update Item i set i.viewCnt = i.viewCnt + 1 where i.id = :id")
-    int addViewCnt(Long id);
-
-    /**
-     * 이중 카테고리에 의한 조회
-     */
-    @Query("select i from Item i " +
-            "where i.petCategory = :petCategory and i.itemCategory = :itemCategory ")
-    Page<Item> getAllItemListByTwoCategory(String petCategory, String itemCategory, Pageable pageable);
-
-    /**
-     * 단일 카테고리에 의한 조회 - petCategory
-     */
-    /* TODO :: queryDSL 사용하여 동적 쿼리로 작성(itemCategory로 조회하는 메소드와 합칠 것) */
-    @Query("select i from Item i " +
-            "where i.petCategory = :petCategory ")
-    Page<Item> getAllItemListByPetCategry(String petCategory, Pageable pageable);
-
-    /**
-     * 단일 카테고리에 의한 조회 - itemCategory
-     */
-    @Query("select i from Item i " +
-            "where i.itemCategory = :itemCategory ")
-    Page<Item> getAllItemListByItemCategory(String itemCategory, Pageable pageable);
+    void addViewCnt(Long id);
 
     /**
      * 상품 기본 검색 - 최신순 정렬

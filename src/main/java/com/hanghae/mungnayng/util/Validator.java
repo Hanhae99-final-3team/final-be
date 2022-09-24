@@ -44,20 +44,6 @@ public class Validator {
         }
     }
 
-    /* 공통작업 - 상품 카테고리 유효성 검사 메소드화 */
-    public void validateItemCategory(String itemCategory) {
-        if (itemCategory == null || itemCategory.equals("")) {
-            throw new IllegalArgumentException("상품 카테고리를 선택해주세요.");
-        }
-    }
-
-    /* 공통작업 - 펫 카테고리 유효성 검사 메소드화 */
-    public void validatePetCategory(String petCategory) {
-        if (petCategory == null || petCategory.equals("")) {
-            throw new IllegalArgumentException("펫 카테고리를 선택해주세요.");
-        }
-    }
-
     /* 상품 존재 여부 유효성 검사 및 반환 */
     public Item validateItemExistence(Long itemId) {
         return itemRepository.findById(itemId).orElseThrow(

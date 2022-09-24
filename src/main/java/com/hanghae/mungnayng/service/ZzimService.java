@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,9 @@ public class ZzimService {
     private final ImageRepository imageRepository;
     private final Validator validator;
 
-    /* 찜 하기 */
+    /**
+     * 찜 하기 메서드
+     */
     @Transactional
     public void itemZzim(Long itemId, UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -51,7 +54,9 @@ public class ZzimService {
         item.updateZzimCnt(zzimCnt);
     }
 
-    /* 찜 취소 */
+    /**
+     * 찜 취소 메서드
+     */
     @Transactional
     public void cancelZzim(Long itemId, UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -71,7 +76,9 @@ public class ZzimService {
         item.updateZzimCnt(zzimCnt);
     }
 
-    /* 내가 찜한 상품 가져오기 */
+    /**
+     * 내가 찜한 상품 가져오기 메서드(마이페이지용)
+     */
     @Transactional(readOnly = true)
     public List<ItemMainResponseDto> getZzimItem(UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
@@ -106,7 +113,9 @@ public class ZzimService {
         return itemMainResponseDtoList;
     }
 
-    /* 거래 완료 버튼 */
+    /**
+     * 거래 완료 메서드(상품상세페이지용)
+     */
     @Transactional
     public Boolean purchaseComplete(Long itemId, UserDetails userDetails) {
         validator.validateUserDetailsInput(userDetails);   /* 로그인 유효성 검사 */
