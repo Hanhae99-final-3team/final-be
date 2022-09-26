@@ -13,9 +13,11 @@ import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -328,14 +330,23 @@ public class ItemService {
     @Cacheable(value = "averagePrice", key = "#itemCategory")
     public long getAveragePriceForCache(String itemCategory) {
         /* 해당 item이 속한 itemCategory 상품의 평균가격 도출(최근 등록된 해당 카테고리 상품 100개 기준) */
-        System.out.println("평균가격 계산 시작");
+        log.info("평균가격 계산 시작");
         List<Item> itemList = itemRepository.getTop100ByItemCategoryOrderByIdDesc(itemCategory);
         long averagePrice = 0L;
         for (Item items : itemList) {
             averagePrice = averagePrice + items.getSellingPrice();
         }
         averagePrice = averagePrice / itemList.size();
-        System.out.println("평균가격 계산 끝");
+        log.info("평균가격 계산 종료");
         return averagePrice;
+    }
+
+    /**
+     * 스케줄러 - 상품이 속한 itemCategory 등록 상품들의 평균가격 캐시 자동 삭제 메서드
+     */
+    @Scheduled(cron = "0 0/1 * * * *")
+    @CacheEvict(value = "averagePrice", allEntries = true)
+    public void deleteAveragePrice() {
+        log.info("평균가격 캐시 자동 삭제");
     }
 }
