@@ -12,6 +12,8 @@ import com.hanghae.mungnayng.util.Validator;
 import com.hanghae.mungnayng.util.aws.S3uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -243,16 +245,12 @@ public class ItemService {
     /**
      * 공통작업 - ItemResponseDto build(상품 상세페이지용)
      */
-    private ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
+    public ItemResponseDto buildItemResponseDto(UserDetails userDetails, Item item) {
 
         int commentCnt = commentRepository.countByItem_Id(item.getId());
+
         /* 해당 item이 속한 itemCategory 상품의 평균가격 도출(최근 등록된 해당 카테고리 상품 100개 기준) */
-        List<Item> itemList = itemRepository.getTop100ByItemCategoryOrderByIdDesc(item.getItemCategory());
-        long averagePrice = 0L;
-        for (Item items : itemList) {
-            averagePrice = averagePrice + items.getSellingPrice();
-        }
-        averagePrice = averagePrice / itemList.size();
+        long averagePrice = ((ItemService) AopContext.currentProxy()).getAveragePriceForCache(item.getItemCategory());  /* Self-Invocation 문제 해결 */
 
         /* 해당 item의 이미지 호출 */
         List<Image> imageList = imageRepository.findAllByItemId(item.getId());
@@ -322,5 +320,22 @@ public class ItemService {
                 .time(TimeUtil.convertLocaldatetimeToTime(item.getCreatedAt()))
                 .lastData(isLastData)
                 .build();
+    }
+
+    /**
+     * 상품 상세페이지 - 상품이 속한 itemCategory 등록 상품들의 평균가격 계산 메서드(캐시 등록)
+     */
+    @Cacheable(value = "averagePrice", key = "#itemCategory")
+    public long getAveragePriceForCache(String itemCategory) {
+        /* 해당 item이 속한 itemCategory 상품의 평균가격 도출(최근 등록된 해당 카테고리 상품 100개 기준) */
+        System.out.println("평균가격 계산 시작");
+        List<Item> itemList = itemRepository.getTop100ByItemCategoryOrderByIdDesc(itemCategory);
+        long averagePrice = 0L;
+        for (Item items : itemList) {
+            averagePrice = averagePrice + items.getSellingPrice();
+        }
+        averagePrice = averagePrice / itemList.size();
+        System.out.println("평균가격 계산 끝");
+        return averagePrice;
     }
 }
