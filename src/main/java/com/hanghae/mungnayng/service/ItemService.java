@@ -344,7 +344,7 @@ public class ItemService {
     /**
      * 스케줄러 - 상품이 속한 itemCategory 등록 상품들의 평균가격 캐시 자동 삭제 메서드
      */
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0 0/3 * * *")
     @CacheEvict(value = "averagePrice", allEntries = true)
     public void deleteAveragePrice() {
         log.info("평균가격 캐시 자동 삭제");

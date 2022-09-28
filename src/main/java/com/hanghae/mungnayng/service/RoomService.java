@@ -5,6 +5,8 @@ import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
+import com.hanghae.mungnayng.domain.chat.Chat;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.*;
 import lombok.RequiredArgsConstructor;
