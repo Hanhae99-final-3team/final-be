@@ -4,17 +4,20 @@ import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.domain.member.dto.LoginRequestDto;
 import com.hanghae.mungnayng.domain.member.dto.LoginResponseDto;
 import com.hanghae.mungnayng.domain.member.dto.SignupRequestDto;
+import com.hanghae.mungnayng.domain.refreshToken.RefreshToken;
 import com.hanghae.mungnayng.exception.BadRequestException;
 import com.hanghae.mungnayng.jwt.JwtProvider;
 import com.hanghae.mungnayng.repository.MemberRepository;
 import com.hanghae.mungnayng.repository.RefreshTokenRepository;
 import com.hanghae.mungnayng.util.Validator;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Service
@@ -89,5 +92,18 @@ public class MemberService {
         member.updateToggle(toggle);
 
         return toggle;
+    }
+
+    @Transactional
+    public void reissue(HttpServletRequest request, HttpServletResponse response) {
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenValue(request.getHeader("RefreshToken"))
+                .orElseThrow(() -> new UnsupportedJwtException("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다."));
+        Member member = refreshToken.getMember();
+        String accessToken = jwtProvider.createAuthorizationToken(member.getEmail(), member.getRole());
+        String refresh_Token = jwtProvider.createRefreshToken(member, member.getRole());
+        tokenToHeaders(accessToken, refresh_Token, response);
+
+        refreshToken.updateTokenValue(refresh_Token);
+
     }
 }

@@ -14,7 +14,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @Api(tags = {"회원 API 정보를 제공하는 Controller"})
 @RequiredArgsConstructor
@@ -62,6 +64,14 @@ public class MemberController {
         Member member = ((UserDetailsImpl) userDetails).getMember();
         memberService.logout(member);
         return ResponseEntity.ok(new SignupResponseDto("로그아웃 성공.", true));
+    }
+
+    /* 토큰재발행 */
+    @ApiOperation(value = "토큰 재발행 메소드")
+    @PostMapping("/members/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+        memberService.reissue(request, response);
+        return ResponseEntity.ok().body(Map.of("success", true, "msg", "토큰 재발행 성공"));
     }
 
     /* 카카오 로그인 */
