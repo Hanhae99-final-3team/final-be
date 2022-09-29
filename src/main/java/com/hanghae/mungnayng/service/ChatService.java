@@ -4,7 +4,6 @@ import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
-import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.RoomDetailRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,7 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 관한 정보가 없습니다."));
         roomDetail.getRoomInfo().updateRecentChat(message.getContent());
         Chat chat = Chat.builder()
+                .roomInfoId(roomId)
                 .roomDetail(roomDetail)
                 .message(message.getContent())
                 .build();

@@ -33,8 +33,7 @@ public class RoomController {
     public ResponseEntity<?> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                         @RequestBody RoomInfoRequestDto requestDto) {
         Member member = userDetails.getMember();
-        roomService.createRoom(member,requestDto);
-        return ResponseEntity.ok().body(Map.of("msg", "성공","roomInfoId",roomService.createRoom(member,requestDto)));
+        return ResponseEntity.ok().body(Map.of("msg", "성공","roomInfo",roomService.createRoom(member,requestDto)));
     }
 
     @ApiOperation(value = "채팅방 정보 조회 메소드")

@@ -5,13 +5,14 @@ import com.hanghae.mungnayng.domain.Room.Dto.RoomInfoResponseDto;
 import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
 import com.hanghae.mungnayng.domain.Room.RoomInfo;
+import com.hanghae.mungnayng.domain.chat.Chat;
+import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import com.hanghae.mungnayng.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class RoomService {
     @Transactional
     public RoomInfoResponseDto createRoom(String nickname, Long me, Long memberId,Long itemId, String title) {
         Member member = memberRepository.findById(me).orElseThrow();
+        if(me.equals( memberId)) throw new IllegalArgumentException( "자신의 게시글 입니다.");
+
         RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(nickname, member.getMemberId(), memberId, itemId, title);
         return createRoom(member, RequestDto);
     }
@@ -76,17 +79,6 @@ public class RoomService {
         detail.updateChatId(chat.getId());
     }
 
-
-    @Transactional
-    public void updateLastReadChat(Long roomId, Long memberId) {
-        RoomDetail detail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, memberId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅방에 속해있지 않은 회원입니다."));
-
-        Chat chat = chatRepository.findFirstByRoomDetail_RoomInfo_IdOrderByCreatedAtDesc(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅 내역이 존재하지 않습니다."));
-
-        detail.updateChatId(chat.getId());
-    }
 
     @Transactional(readOnly = true)
     public List<RoomInfoResponseDto> getRoomInfo(String memberId) {
