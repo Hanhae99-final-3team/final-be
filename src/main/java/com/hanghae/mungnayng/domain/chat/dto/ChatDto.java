@@ -28,7 +28,7 @@ public class ChatDto {
         this.memberId = member.getMemberId();
 //        this.proPic = member.getProPic();
         this.content = chat.getMessage();
-        this.roomInfoId = chat.getRoomInfoId();
+        this.roomInfoId = chat.getRoomInfo().getId();
         this.createdAt = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of("Asia/Seoul")));
     }
 }

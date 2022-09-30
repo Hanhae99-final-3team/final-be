@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
 import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.RoomDetailRepository;
+import com.hanghae.mungnayng.repository.RoomInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final RoomDetailRepository roomDetailsRepository;
+    private final RoomInfoRepository roomInfoRepository;
     private final ChatRepository chatRepository;
 
     @Transactional
@@ -26,8 +28,9 @@ public class ChatService {
         RoomDetail roomDetail = roomDetailsRepository.findByRoomInfo_IdAndMember_MemberId(roomId, message.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방에 관한 정보가 없습니다."));
         roomDetail.getRoomInfo().updateRecentChat(message.getContent());
+        RoomInfo roomInfo = roomInfoRepository.findById(roomId).orElseThrow(()-> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
         Chat chat = Chat.builder()
-                .roomInfoId(roomId)
+                .roomInfo(roomInfo)
                 .roomDetail(roomDetail)
                 .message(message.getContent())
                 .build();

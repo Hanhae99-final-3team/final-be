@@ -1,6 +1,7 @@
 package com.hanghae.mungnayng.domain.Room;
 
 import com.hanghae.mungnayng.domain.Timestamped;
+import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,9 @@ public class RoomInfo extends Timestamped {
 
     @OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RoomDetail> roomDetail;
+
+    @OneToMany(mappedBy =  "roomInfo", cascade =  CascadeType.REMOVE, orphanRemoval = true)
+    private List<Chat> chat;
 
     @ManyToOne
     @JoinColumn(name = "itemId")

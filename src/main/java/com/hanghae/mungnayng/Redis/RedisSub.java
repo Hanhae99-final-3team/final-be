@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class RedisSub implements MessageListener {
+
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final SimpMessageSendingOperations messageSendingOperations;
@@ -23,7 +24,8 @@ public class RedisSub implements MessageListener {
         try {
             String publishMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatDto chatMessage = objectMapper.readValue(publishMessage, ChatDto.class);
-           messageSendingOperations.convertAndSend("/sub/chat/room/" + chatMessage.getRoomInfoId(), chatMessage); /*메세지 보내기*/
+            log.info(chatMessage.getRoomInfoId().toString());
+            messageSendingOperations.convertAndSend("/sub/chat/room/" + chatMessage.getRoomInfoId(), chatMessage); /*메세지 보내기*/
         } catch (Exception e) {
             log.error(e.getMessage());
         }
