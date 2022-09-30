@@ -34,6 +34,7 @@ public class SearchService {
      */
     @Transactional
     public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String toggle, String keyword) {
+        validator.validateSearchMethod(keyword);     /* 검색 메서드 유효성 검사(null & undefined X) */
         String nickname = "nonMember";  /* 비회원으로 검색할 경우 nickname은 nonMember로 저장 */
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
@@ -64,6 +65,7 @@ public class SearchService {
      */
     @Transactional
     public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String toggle, String keyword) {
+        validator.validateSearchMethod(keyword);     /* 검색 메서드 유효성 검사(null & undefined X) */
         String nickname = "nonMember";
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
