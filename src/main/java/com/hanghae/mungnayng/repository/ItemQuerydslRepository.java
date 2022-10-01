@@ -59,7 +59,10 @@ public class ItemQuerydslRepository {
     /* BooleanExpression -> where 절에 필요한 조건식 반환
      * null 반환 시 조건(where)절에서 조건이 무시(제거)되어 안전 / 전부 null이면 전체 값 호출 */
     private BooleanExpression petCategoryEq(String petCategory) {
-        return petCategory != null ? item.petCategory.eq(petCategory) : null;
+        if (petCategory==null || petCategory.equals("모두")){
+            return null;
+        }
+        return item.petCategory.eq(petCategory);
     }
 
     private BooleanExpression itemCategoryEq(String itemCateogry) {
