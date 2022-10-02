@@ -34,10 +34,10 @@ public class Item extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private String petCategory;     /* 1차분류 - 강아지 or 고양이 */
 
-    @Column
+    @Column(nullable = false)
     private String itemCategory;     /* 2차분류 - 사료, 간식, 의류, 미용, 장난감, 기타용품 */
 
     @Column

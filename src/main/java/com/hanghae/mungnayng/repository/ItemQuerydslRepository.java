@@ -1,7 +1,10 @@
 package com.hanghae.mungnayng.repository;
 
 import com.hanghae.mungnayng.domain.item.Item;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +47,27 @@ public class ItemQuerydslRepository {
     }
 
     /**
+     * 검색 쿼리 메서드
+     */
+    public List<Item> getItemListParseredByNgram(String keyword, String target) {
+        /* Dialect Class에서 만든 registerFunction() 메서드 사용하여 디테일한 부분 설정 */
+        NumberTemplate<Double> booleanTemplate = Expressions.numberTemplate(Double.class,
+                "function('match',{0},{1},{2},{3},{4})", item.title, item.content, item.itemCategory, item.petCategory, "+" + keyword + "*");
+
+        /* 동적 정력 위한 OrderSpecifier 가구현 - TODO :: 추후 FE와 논의 후 리팩터링 필요 */
+        OrderSpecifier<?> orderSpecifier = item.viewCnt.desc();
+        if (target.equals("item.id")) {
+            orderSpecifier = item.id.desc();
+        }
+
+        return jpaQueryFactory.select(item)
+                .from(item)
+                .where(booleanTemplate.gt(0))
+                .orderBy(orderSpecifier)
+                .fetch();
+    }
+
+    /**
      * 상품 조회 시 해당 상품이 마지막 상품인지 조회하는 메서드(무한 스크롤 구현 위함)
      */
     public Long getLastData(String petCategory, String itemCategory) {
@@ -59,7 +83,7 @@ public class ItemQuerydslRepository {
     /* BooleanExpression -> where 절에 필요한 조건식 반환
      * null 반환 시 조건(where)절에서 조건이 무시(제거)되어 안전 / 전부 null이면 전체 값 호출 */
     private BooleanExpression petCategoryEq(String petCategory) {
-        if (petCategory==null || petCategory.equals("모두")){
+        if (petCategory == null || petCategory.equals("모두")) {
             return null;
         }
         return item.petCategory.eq(petCategory);
