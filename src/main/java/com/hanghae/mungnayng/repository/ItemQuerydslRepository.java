@@ -54,7 +54,7 @@ public class ItemQuerydslRepository {
         NumberTemplate<Double> booleanTemplate = Expressions.numberTemplate(Double.class,
                 "function('match',{0},{1},{2},{3},{4})", item.title, item.content, item.itemCategory, item.petCategory, "+" + keyword + "*");
 
-        /* 동적 정력 위한 OrderSpecifier 가구현 - TODO :: 추후 FE와 논의 후 리팩터링 필요 */
+        /* 동적 정렬 위한 OrderSpecifier 가구현 - TODO :: 추후 FE와 논의 후 리팩터링 필요 */
         OrderSpecifier<?> orderSpecifier = item.viewCnt.desc();
         if (target.equals("item.id")) {
             orderSpecifier = item.id.desc();
