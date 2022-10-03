@@ -42,7 +42,7 @@
   <br> 
 
   <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=black"> 
-  <img src="https://img.shields.io/badge/Kakao Login-FFCD00?style=for-the-badge&logo=Kakao Login&logoColor=black"> 
+  <img src="https://img.shields.io/badge/kakaologin-FFCD00?style=for-the-badge&logo=kakaologin&logoColor=black"> 
   <img src="https://img.shields.io/badge/Json web tokens-000000?style=for-the-badge&logo=Json web tokens&logoColor=white"> 
   <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> 
   <br>
@@ -134,11 +134,11 @@
 
 |이름|깃허브 주소|포지션|
 |---|---|---|
-|김수정|[crystal993의 github](https://github.com/crystal993)|Frontend|
-|김주형|[KoreanCodingMachine의 github](https://github.com/KoreanCodingMachine)|Frontend|
 |이회섭|[HoisubLee의 github](https://github.com/HoisubLee)|Backend|
 |김재영|[fabius96의 github](https://github.com/fabius96)|Backend|
 |한종혁|[1argeD의 github](https://github.com/1argeD)|Backend|
+|김수정|[crystal993의 github](https://github.com/crystal993)|Frontend|
+|김주형|[KoreanCodingMachine의 github](https://github.com/KoreanCodingMachine)|Frontend|
 |양명현|[thisLife-hyeon의 github](https://github.com/thisLife-hyeon)|UI/UX|
 
 
