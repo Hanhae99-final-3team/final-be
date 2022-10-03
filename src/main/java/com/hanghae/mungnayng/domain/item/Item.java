@@ -34,17 +34,17 @@ public class Item extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private String petCategory;     /* 1차분류 - 강아지 or 고양이 */
 
-    @Column
+    @Column(nullable = false)
     private String itemCategory;     /* 2차분류 - 사료, 간식, 의류, 미용, 장난감, 기타용품 */
 
     @Column
     private String location;
 
-    @OneToMany(fetch =  FetchType.LAZY, mappedBy="item", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private  List <RoomInfo> roomInfo;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<RoomInfo> roomInfo;
 
     @Column
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -65,13 +65,13 @@ public class Item extends Timestamped {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isComplete;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> image;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Zzim> zzim;
 
-    public void update(ItemRequestDto itemRequestDto){
+    public void update(ItemRequestDto itemRequestDto) {
         this.title = itemRequestDto.getTitle();
         this.content = itemRequestDto.getContent();
         this.petCategory = itemRequestDto.getPetCategory();
@@ -81,11 +81,11 @@ public class Item extends Timestamped {
         this.sellingPrice = itemRequestDto.getSellingPrice();
     }
 
-    public void updateZzimCnt(int zzimCnt){
+    public void updateZzimCnt(int zzimCnt) {
         this.zzimCnt = zzimCnt;
     }
 
-    public void updateIsComplete(boolean isComplete){
+    public void updateIsComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
 

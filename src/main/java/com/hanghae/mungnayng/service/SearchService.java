@@ -27,6 +27,7 @@ public class SearchService {
     private final ImageRepository imageRepository;
     private final SearchRepository searchRepository;
     private final MemberRepository memberRepository;
+    private final ItemQuerydslRepository itemQuerydslRepository;
     private final Validator validator;
 
     /**
@@ -34,6 +35,7 @@ public class SearchService {
      */
     @Transactional
     public List<ItemMainResponseDto> searchItem(UserDetails userDetails, String toggle, String keyword) {
+        validator.validateSearchMethod(keyword);     /* 검색 메서드 유효성 검사(null & undefined X) */
         String nickname = "nonMember";  /* 비회원으로 검색할 경우 nickname은 nonMember로 저장 */
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
@@ -47,8 +49,10 @@ public class SearchService {
             searchRepository.save(itemSearch);
         }
 
-        /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
-        List<Item> itemList = itemRepository.getAllItemListByTitleOrContent(keyword);
+        String target = "item.viewCnt"; /* 정렬 기준(임시) */
+        /* return 값 -> keyword를 바탕으로 상품 찾아 DtoList 작성 */
+//        List<Item> itemList = itemRepository.getAllItemListByTitleOrContent(keyword);
+        List<Item> itemList = itemQuerydslRepository.getItemListParseredByNgram(keyword, target);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemMainResponseDtoList.add(
@@ -64,6 +68,7 @@ public class SearchService {
      */
     @Transactional
     public List<ItemMainResponseDto> searchItemOrderByPopularity(UserDetails userDetails, String toggle, String keyword) {
+        validator.validateSearchMethod(keyword);     /* 검색 메서드 유효성 검사(null & undefined X) */
         String nickname = "nonMember";
         if (userDetails != null) {
             nickname = (userDetails.getUsername());
@@ -76,9 +81,10 @@ public class SearchService {
                     .build();
             searchRepository.save(itemSearch);
         }
-
-        /* return 값 -> keyword를 바탕으로 상품 찾아 Dto List 작성 */
-        List<Item> itemList = itemRepository.getAllItemListByOrderByPopularity(keyword);
+        String target = "item.id"; /* 정렬 기준(임시) */
+        /* return 값 -> keyword를 바탕으로 상품 찾아 DtoList 작성 */
+//        List<Item> itemList = itemRepository.getAllItemListByOrderByPopularity(keyword);
+        List<Item> itemList = itemQuerydslRepository.getItemListParseredByNgram(keyword, target);
         List<ItemMainResponseDto> itemMainResponseDtoList = new ArrayList<>();
         for (Item item : itemList) {
             itemMainResponseDtoList.add(

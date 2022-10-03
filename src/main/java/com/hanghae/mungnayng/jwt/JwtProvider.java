@@ -34,7 +34,7 @@ public class JwtProvider {
     }
 
     public String createAuthorizationToken(String memberEmail, String roles) {
-        Long tokenInvailedTime = 1000L * 60 * 60; /* 60m */
+        Long tokenInvailedTime = 1000L * 60 * 50; /* 60m */
         return this.createToken(memberEmail, roles, tokenInvailedTime);
     }
 
@@ -72,8 +72,8 @@ public class JwtProvider {
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
             /* TODO : 토큰 자동 재발급 처리 필요, 그전까지 Exception 제외 */
-//        } catch (ExpiredJwtException e) {
-//            log.info("Expired JWT token, 만료된 JWT token 입니다.");
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token, 만료된 JWT token 입니다.");
 //            /* TODO : 토큰 재발급 요청 처리 추가 필요 */
 //        } catch (UnsupportedJwtException e) {
 //            log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
