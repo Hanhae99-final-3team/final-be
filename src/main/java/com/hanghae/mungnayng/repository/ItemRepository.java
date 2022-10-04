@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
@@ -90,4 +91,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * 특정 itemCategory 등록상품 100개 리스트화 메소드(평균 가격 도출 위함)
      */
     List<Item> getTop100ByItemCategoryOrderByIdDesc(@Param("itemCategory") String itemCategory);
+
+    /**
+     * 방 아이디를 통해서 아이템 조회하기
+     */
+    Optional<Item> findByRoomInfo_Id(Long aLong);
 }
