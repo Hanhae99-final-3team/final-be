@@ -24,9 +24,8 @@ public class Chat extends Timestamped {
     @JoinColumn(name = "room_detail_id", nullable = false)
     private RoomDetail roomDetail;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_info_id", nullable = false)
-    private RoomInfo roomInfo;
+    @Column
+    private Long roomInfoId;
 //
 //    @Column
 //    private String proPic;
