@@ -20,10 +20,13 @@ public class ChatDto {
     private String createdAt;
 
     private  Long roomInfoId;
+
+    private Long chaId;
 //    private String proPic;
 
 
     public ChatDto (Chat chat) {
+        this.chaId=chat.getId();
         Member member = chat.getRoomDetail().getMember();
         this.memberId = member.getMemberId();
 //        this.proPic = member.getProPic();

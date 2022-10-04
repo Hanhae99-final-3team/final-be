@@ -30,6 +30,7 @@ public class ChatService {
         roomDetail.getRoomInfo().updateRecentChat(message.getContent());
         RoomInfo roomInfo = roomInfoRepository.findById(roomId).orElseThrow(()-> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
         Chat chat = Chat.builder()
+                .id(message.getChaId())
                 .roomInfo(roomInfo)
                 .roomDetail(roomDetail)
                 .message(message.getContent())
