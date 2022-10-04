@@ -117,7 +117,7 @@
 |문제원인|기존 검색 기능은 like %input%으로 구현하였었습니다. 이럴 경우 의도했던 검색은 가능하나 Full Table Scan으로 동작하는 것이 문제의 원인이었다.|
 |문제해결|Full Text Index를 생성하여 MySQL의 MATCH() AGAINST() 함수를 활용해 기존의 like 쿼리문을 개선하였습니다. 하지만 JPQL에서는 MATCH() 함수를 지원하지 않았기 Custom MysqlDialect Class 생성하여 Querydsl를 바탕으로 기존 검색 메서드를 리팩터링하였습니다.
 |해결결과|현재 프로젝트 DB Table row는 많지 않아 큰 차이를 확인 할 수 없었으나 Test용 DB를 생성하여 약 100만 건의 더미데이터를 활용하여 성능 테스트를 해본 결과 기존 like %input% 방식의 검색 메서드 대비 약 116%의 성능 향상을 확인할 수 있었습니다. |
-|<img width="602" alt="image" src="https://user-images.githubusercontent.com/108924263/193781160-d8b87876-78eb-443b-aa15-1256fb990b91.png">|
+||<img width="602" alt="image" src="https://user-images.githubusercontent.com/108924263/193781160-d8b87876-78eb-443b-aa15-1256fb990b91.png">||
 
 
 <hr>
