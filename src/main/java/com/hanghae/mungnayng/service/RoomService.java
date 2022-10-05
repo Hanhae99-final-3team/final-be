@@ -45,7 +45,7 @@ public class RoomService {
     public RoomInfoResponseDto createRoom(Member member, RoomInfoRequestDto requestDto) {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        RoomInfo room = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
+        RoomDetail room = roomDetailsRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
                 .orElseGet(() ->{
                     RoomInfo roomInfo = RoomInfo.builder()
                             .member(member)
@@ -59,10 +59,12 @@ public class RoomService {
                             .member(member)
                             .roomInfo(roomInfo)
                             .build();
+
                     roomInfo.getRoomDetail().add(roomDetail);
                     roomInfoRepository.save(roomInfo);
                     redisRepository.subscribe(roomInfo.getId().toString());
-                    return roomInfo;
+
+                    return roomDetail;
                 });
         return RoomInfoResponseDto.Info(room);
     }
@@ -88,8 +90,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<RoomInfoResponseDto> getRoomInfo(Member member) {
-        RoomDetail roomDetail = roomDetailsRepository.findAllById(member.getMemberId()).orElseThrow();
-            List<RoomInfo> allByOrderByModifiedAtDesc = roomInfoRepository.findAllByIdOrderByModifiedAtDesc(roomDetail.getRoomInfo().getId());
+        List<RoomDetail> allByOrderByModifiedAtDesc =  roomDetailsRepository.findAllByMemberOrderByModifiedAtDesc(member);
         return allByOrderByModifiedAtDesc.stream()
                 .map(RoomInfoResponseDto::Info)
                 .collect(Collectors.toList());
