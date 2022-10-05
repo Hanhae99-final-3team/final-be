@@ -88,7 +88,8 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<RoomInfoResponseDto> getRoomInfo(Member member) {
-        List<RoomInfo> allByOrderByModifiedAtDesc = roomInfoRepository.findAllByMemberOrderByModifiedAtDesc(member);
+        RoomDetail roomDetail = roomDetailsRepository.findAllById(member.getMemberId()).orElseThrow();
+            List<RoomInfo> allByOrderByModifiedAtDesc = roomInfoRepository.findAllByIdOrderByModifiedAtDesc(roomDetail.getRoomInfo().getId());
         return allByOrderByModifiedAtDesc.stream()
                 .map(RoomInfoResponseDto::Info)
                 .collect(Collectors.toList());

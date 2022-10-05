@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface RoomInfoRepository extends JpaRepository<RoomInfo, Long> {
     List<RoomInfo> findAllByMemberOrderByModifiedAtDesc(Member member);
+    List<RoomInfo> findAllByIdOrderByModifiedAtDesc(Long roomDetailId);
     Optional<RoomInfo> findByMember_MemberId(Long MemberId);
     Optional<RoomInfo> findByMember_MemberIdAndItem_Id(Long memberId, Long itemId);
 }
