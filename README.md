@@ -78,13 +78,13 @@
 ## 🗺 API 설계 
 
 ### [API 설계 보러가기](https://heather-warbler-33c.notion.site/API-fb817bdee95f4d03bf54e69108d0dfa8)
+##### [Swagger UI로 확인하기](https://fabius-bk.shop/swagger-ui/index.html#/)
 
 <hr>
 
 ## 📝 ERD 설계 
 
 ### [ERD 설계 보러가기](https://www.erdcloud.com/d/uJr3xXdEqhSJFLha3)
-##### [Swagger UI로 확인하기](https://fabius-bk.shop/swagger-ui/index.html#/)
 
 <hr>
 
