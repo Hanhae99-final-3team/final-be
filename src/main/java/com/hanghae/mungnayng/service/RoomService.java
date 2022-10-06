@@ -35,7 +35,7 @@ public class RoomService {
     @Transactional
     public RoomInfoResponseDto createRoom(String nickname, Long me, Long memberId,Long itemId, String title) {
         Member member = memberRepository.findById(me).orElseThrow();
-        if(me.equals( memberId)) throw new IllegalArgumentException( "자신의 게시글 입니다.");
+//        if(me.equals( memberId)) throw new IllegalArgumentException( "자신의 게시글 입니다.");
 
         RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(nickname, member.getMemberId(), memberId, itemId, title);
         return createRoom(member, RequestDto);
@@ -126,8 +126,6 @@ public class RoomService {
     public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
         RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
-        if (!me.getMemberId().equals(roomInfo.getMember().getMemberId()))
-            throw new IllegalArgumentException("권한이 없습니다.");
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
         log.info(member.toString());
