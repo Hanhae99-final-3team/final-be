@@ -35,7 +35,7 @@ public class RoomService {
     @Transactional
     public RoomInfoResponseDto createRoom(String nickname, Long me, Long memberId,Long itemId, String title) {
         Member member = memberRepository.findById(me).orElseThrow();
-        if(me.equals( memberId)) throw new IllegalArgumentException( "자신의 게시글 입니다.");
+//        if(me.equals( memberId)) throw new IllegalArgumentException( "자신의 게시글 입니다.");
 
         RoomInfoRequestDto RequestDto = new RoomInfoRequestDto(nickname, member.getMemberId(), memberId, itemId, title);
         return createRoom(member, RequestDto);
@@ -45,7 +45,7 @@ public class RoomService {
     public RoomInfoResponseDto createRoom(Member member, RoomInfoRequestDto requestDto) {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 없습니다."));
-        RoomInfo room = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
+        RoomDetail room = roomDetailsRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), requestDto.getItemId())/*맴버와 아이템 아이디 값이 없으면 빌드실행*/
                 .orElseGet(() ->{
                     RoomInfo roomInfo = RoomInfo.builder()
                             .member(member)
@@ -59,10 +59,12 @@ public class RoomService {
                             .member(member)
                             .roomInfo(roomInfo)
                             .build();
+
                     roomInfo.getRoomDetail().add(roomDetail);
                     roomInfoRepository.save(roomInfo);
                     redisRepository.subscribe(roomInfo.getId().toString());
-                    return roomInfo;
+
+                    return roomDetail;
                 });
         return RoomInfoResponseDto.Info(room);
     }
@@ -88,7 +90,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<RoomInfoResponseDto> getRoomInfo(Member member) {
-        List<RoomInfo> allByOrderByModifiedAtDesc = roomInfoRepository.findAllByMemberOrderByModifiedAtDesc(member);
+        List<RoomDetail> allByOrderByModifiedAtDesc =  roomDetailsRepository.findAllByMemberOrderByModifiedAtDesc(member);
         return allByOrderByModifiedAtDesc.stream()
                 .map(RoomInfoResponseDto::Info)
                 .collect(Collectors.toList());
@@ -124,8 +126,6 @@ public class RoomService {
     public void inviteRoom(Member me, Long roomInfoId, RoomInviteDto inviteDto) {
         RoomInfo roomInfo = roomInfoRepository.findById(roomInfoId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅창 입니다."));
-        if (!me.getMemberId().equals(roomInfo.getMember().getMemberId()))
-            throw new IllegalArgumentException("권한이 없습니다.");
         Member member = memberRepository.findById(inviteDto.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("초대 대상이 올바르지 않습니다."));
         log.info(member.toString());
