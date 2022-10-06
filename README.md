@@ -44,12 +44,19 @@
   <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
   <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
   <img src="https://img.shields.io/badge/Spring boot-6DB33F?style=for-the-badge&logo=Spring boot&logoColor=black"> 
+  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> 
   <br> 
 
   <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=black"> 
-  <img src="https://img.shields.io/badge/kakaologin-FFCD00?style=for-the-badge&logo=kakaologin&logoColor=black"> 
+  <img src="https://img.shields.io/badge/kakaologin-FFCD00?style=for-the-badge&logo=kakao&logoColor=black"> 
   <img src="https://img.shields.io/badge/Json web tokens-000000?style=for-the-badge&logo=Json web tokens&logoColor=white"> 
-  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> 
+  <br>
+  
+  <img src="https://img.shields.io/badge/querydsl-2599ED?style=for-the-badge&logo=querydsl&logoColor=white">
+  <img src="https://img.shields.io/badge/sock JS-000000?style=for-the-badge&logo=sockjs&logoColor=black"> 
+  <img src="https://img.shields.io/badge/stomp-FF6C37?style=for-the-badge&logo=stomp&logoColor=white">
+  <img src="https://img.shields.io/badge/websocket-010101?style=for-the-badge&logo=websocket&logoColor=white">
+  <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"> 
   <br>
   
   <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> 
