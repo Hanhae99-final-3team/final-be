@@ -2,7 +2,6 @@ package com.hanghae.mungnayng.controller;
 
 
 import com.hanghae.mungnayng.domain.Room.RoomDetail;
-import com.hanghae.mungnayng.domain.Room.RoomInfo;
 import com.hanghae.mungnayng.domain.UserDetailsImpl;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
 import com.hanghae.mungnayng.domain.member.Member;
@@ -31,9 +30,9 @@ public class ChatController {
     public ResponseEntity<?> getRoomChat(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                          @PathVariable Long itemId) {
         Member member = userDetails.getMember();
-        RoomInfo roomInfo = roomInfoRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), itemId)
-                .orElseThrow(()-> new IllegalArgumentException("채팅방이 없어요!"));
-    List<ChatDto> chats = chatService.getChat(roomInfo);
+        RoomDetail roomDetail = roomDetailRepository.findByMember_MemberIdAndItem_Id(member.getMemberId(), itemId)
+                .orElseThrow();
+    List<ChatDto> chats = chatService.getChat(roomDetail.getRoomInfo());
         return ResponseEntity.ok().body(chats);
     }
 }

@@ -1,5 +1,6 @@
 package com.hanghae.mungnayng.domain.Room;
 
+import com.hanghae.mungnayng.domain.Timestamped;
 import com.hanghae.mungnayng.domain.chat.Chat;
 import com.hanghae.mungnayng.domain.item.Item;
 import com.hanghae.mungnayng.domain.member.Member;
@@ -16,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomDetail {
+public class RoomDetail extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

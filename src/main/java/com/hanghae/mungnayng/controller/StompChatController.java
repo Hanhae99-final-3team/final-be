@@ -6,6 +6,7 @@ import com.hanghae.mungnayng.domain.Room.Dto.RoomInviteDto;
 import com.hanghae.mungnayng.domain.chat.dto.ChatDto;
 import com.hanghae.mungnayng.repository.ChatRepository;
 import com.hanghae.mungnayng.repository.RedisRepository;
+import com.hanghae.mungnayng.repository.RoomInfoRepository;
 import com.hanghae.mungnayng.service.ChatService;
 import com.hanghae.mungnayng.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class StompChatController {
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
     private final ChatService chatService;
     private final RoomService roomService;
+
+    private final RoomInfoRepository roomInfoRepository;
     private final RedisRepository redisRepository;
 
     private final RedisPub redisPub;
@@ -46,7 +49,7 @@ public class StompChatController {
     @MessageMapping(value = "/chat/room/{roomId}")
     public void message(@DestinationVariable String roomId, ChatDto message) {
         /*채팅 저장*/
-        message = chatService.saveChat(Long.parseLong(roomId), message);
+        message = chatService.saveChat(Long.valueOf(roomId), message);
         log.info("pub success" + message.getContent());
 //        template.convertAndSend("/sub/chat/room/" + roomId, message); /*채팅방으로*/
         redisPub.publish(redisRepository.getTopic(roomId), message);
