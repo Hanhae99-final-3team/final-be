@@ -11,7 +11,7 @@
 <hr>
 
 ## ⚙️ 서비스 아키텍처 
-![image](https://user-images.githubusercontent.com/72599761/193501534-683c0049-c673-4105-af83-a86e8aee8965.png)
+![서비스 아키텍처_v2 0](https://user-images.githubusercontent.com/89531122/194447149-a98b4332-1281-49d6-bde2-4d6139a4a646.png)
 
 <hr>
 
